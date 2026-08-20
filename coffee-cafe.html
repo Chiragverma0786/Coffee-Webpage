@@ -1,0 +1,4522 @@
+<!DOCTYPE html>
+<html lang="en" class="lenis">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COFFEE CAFÉ — The Art of Slow Extraction</title>
+  <meta name="description" content="Award-winning specialty roastery and slow coffee atelier. Single-origin beans, precision roasting, and curated morning rituals.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Outfit:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@500;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Third-party Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* ==========================================================================
+       DESIGN SYSTEM & CSS VARIABLES
+       ========================================================================== */
+    :root {
+      --bg-dark: #090807;
+      --bg-card: #130f0c;
+      --bg-card-elevated: #1a1511;
+      --bg-glass: rgba(19, 15, 12, 0.72);
+      --bg-glass-heavy: rgba(12, 9, 7, 0.88);
+      
+      --cream: #FAF6EE;
+      --cream-dim: #E8DFCE;
+      --cream-muted: #B8AC98;
+      
+      --amber-gold: #E5A04E;
+      --amber-light: #F7CB88;
+      --amber-glow: rgba(229, 160, 78, 0.28);
+      
+      --terracotta: #D85D38;
+      --terracotta-vibrant: #FF6838;
+      
+      --roast-espresso: #211914;
+      --roast-dark: #120D0A;
+      
+      --border-subtle: rgba(229, 160, 78, 0.16);
+      --border-strong: rgba(229, 160, 78, 0.35);
+      --border-light: rgba(250, 246, 238, 0.12);
+      
+      --font-display: 'Fraunces', serif;
+      --font-body: 'Outfit', -apple-system, sans-serif;
+      --font-mono: 'Space Mono', monospace;
+      --font-accent: 'Syne', sans-serif;
+      
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out-smooth: cubic-bezier(0.25, 1, 0.5, 1);
+      --transition-fast: 0.25s var(--ease-out-expo);
+      --transition-medium: 0.5s var(--ease-out-expo);
+      --transition-slow: 0.9s var(--ease-out-expo);
+      
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-full: 9999px;
+    }
+
+    /* Reset & Base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html.lenis {
+      height: auto;
+    }
+    .lenis.lenis-smooth {
+      scroll-behavior: auto;
+    }
+    .lenis.lenis-smooth [data-lenis-prevent] {
+      overscroll-behavior: contain;
+    }
+    .lenis.lenis-stopped {
+      overflow: hidden;
+    }
+    .lenis.lenis-scrolling iframe {
+      pointer-events: none;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--cream);
+      font-family: var(--font-body);
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    ::selection {
+      background: var(--amber-gold);
+      color: var(--bg-dark);
+    }
+
+    img, svg, video {
+      display: block;
+      max-width: 100%;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      transition: var(--transition-fast);
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: inherit;
+    }
+
+    h1, h2, h3, h4, .serif-font {
+      font-family: var(--font-display);
+      font-weight: 400;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+
+    .mono-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--amber-gold);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mono-eyebrow::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--amber-gold);
+      box-shadow: 0 0 10px var(--amber-gold);
+    }
+
+    .container {
+      max-width: 1340px;
+      margin: 0 auto;
+      padding: 0 36px;
+    }
+    @media (max-width: 768px) {
+      .container { padding: 0 20px; }
+    }
+
+    /* Ambient Film Grain Overlay */
+    .grain-overlay {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* ==========================================================================
+       CUSTOM AWWWARDS CURSOR
+       ========================================================================== */
+    .custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      background-color: var(--amber-gold);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s var(--ease-out-expo), height 0.3s var(--ease-out-expo), background-color 0.3s;
+    }
+    .cursor-follower {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 38px;
+      height: 38px;
+      border: 1px solid rgba(229, 160, 78, 0.45);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cream);
+      transition: width 0.35s var(--ease-out-expo), height 0.35s var(--ease-out-expo), background 0.3s, border-color 0.3s;
+    }
+    .cursor-follower span {
+      opacity: 0;
+      transform: scale(0.6);
+      transition: 0.2s;
+    }
+    .cursor-hover .custom-cursor {
+      width: 0;
+      height: 0;
+      opacity: 0;
+    }
+    .cursor-hover .cursor-follower {
+      width: 76px;
+      height: 76px;
+      background: rgba(229, 160, 78, 0.88);
+      border-color: transparent;
+      color: var(--bg-dark);
+      font-weight: 700;
+      backdrop-filter: blur(4px);
+    }
+    .cursor-hover .cursor-follower span {
+      opacity: 1;
+      transform: scale(1);
+    }
+    @media (pointer: coarse) {
+      .custom-cursor, .cursor-follower { display: none !important; }
+    }
+
+    /* ==========================================================================
+       PAGE PRELOADER
+       ========================================================================== */
+    .preloader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-dark);
+      z-index: 10001;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--cream);
+      overflow: hidden;
+    }
+    .preloader-counter {
+      font-family: var(--font-display);
+      font-size: clamp(64px, 12vw, 140px);
+      font-weight: 300;
+      line-height: 1;
+      color: var(--amber-gold);
+      margin-bottom: 20px;
+    }
+    .preloader-bar-wrap {
+      width: 220px;
+      height: 2px;
+      background: rgba(250, 246, 238, 0.1);
+      position: relative;
+      overflow: hidden;
+      border-radius: 2px;
+    }
+    .preloader-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--amber-gold), var(--terracotta));
+      transition: width 0.05s linear;
+    }
+    .preloader-text {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--cream-muted);
+      margin-top: 24px;
+    }
+
+    /* ==========================================================================
+       SCROLL PROGRESS BAR
+       ========================================================================== */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--amber-gold), var(--terracotta));
+      width: 0%;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    /* ==========================================================================
+       NAVIGATION & HEADER
+       ========================================================================== */
+    header.site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 90;
+      padding: 24px 0;
+      transition: transform 0.4s var(--ease-out-expo), background 0.4s, padding 0.4s;
+    }
+    header.site-header.scrolled {
+      padding: 14px 0;
+      background: var(--bg-glass);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--cream);
+    }
+    .brand-logo em {
+      font-style: italic;
+      color: var(--amber-gold);
+      font-weight: 400;
+    }
+    .logo-badge {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      padding: 3px 8px;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      color: var(--amber-gold);
+      background: rgba(229, 160, 78, 0.08);
+      letter-spacing: 0.12em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      background: rgba(26, 21, 17, 0.6);
+      padding: 8px 24px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-light);
+      backdrop-filter: blur(12px);
+    }
+    .nav-links a {
+      font-size: 13.5px;
+      font-weight: 400;
+      letter-spacing: 0.03em;
+      color: var(--cream-dim);
+      position: relative;
+      padding: 6px 0;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 1px;
+      background: var(--amber-gold);
+      transition: width 0.3s var(--ease-out-expo);
+    }
+    .nav-links a:hover {
+      color: var(--amber-light);
+    }
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Soundscape Ambient Toggle */
+    .sound-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      background: rgba(26, 21, 17, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      color: var(--cream-dim);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: var(--transition-fast);
+    }
+    .sound-toggle:hover {
+      border-color: var(--amber-gold);
+      color: var(--cream);
+    }
+    .sound-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 14px;
+    }
+    .sound-bars span {
+      width: 2px;
+      height: 4px;
+      background: var(--amber-gold);
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+    .sound-toggle.playing .sound-bars span:nth-child(1) { animation: soundBar 0.8s ease-in-out infinite alternate; }
+    .sound-toggle.playing .sound-bars span:nth-child(2) { animation: soundBar 1.2s ease-in-out infinite alternate 0.2s; }
+    .sound-toggle.playing .sound-bars span:nth-child(3) { animation: soundBar 0.6s ease-in-out infinite alternate 0.4s; }
+    .sound-toggle.playing .sound-bars span:nth-child(4) { animation: soundBar 1.0s ease-in-out infinite alternate 0.1s; }
+    @keyframes soundBar { 0% { height: 3px; } 100% { height: 14px; } }
+
+    /* Cart Button */
+    .cart-btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(26, 21, 17, 0.8);
+      border: 1px solid var(--border-subtle);
+      color: var(--cream);
+      transition: var(--transition-fast);
+    }
+    .cart-btn:hover {
+      background: var(--amber-gold);
+      color: var(--bg-dark);
+      border-color: var(--amber-gold);
+      transform: translateY(-2px);
+    }
+    .cart-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--terracotta);
+      color: var(--cream);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .btn-reserve {
+      padding: 11px 22px;
+      border-radius: var(--radius-full);
+      background: var(--amber-gold);
+      color: var(--bg-dark);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition-fast);
+      box-shadow: 0 4px 20px var(--amber-glow);
+    }
+    .btn-reserve:hover {
+      background: var(--cream);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 26px rgba(250, 246, 238, 0.25);
+    }
+
+    .mobile-menu-trigger {
+      display: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(26, 21, 17, 0.8);
+      border: 1px solid var(--border-light);
+      color: var(--cream);
+      align-items: center;
+      justify-content: center;
+    }
+    @media (max-width: 1024px) {
+      .nav-links { display: none; }
+      .sound-toggle { display: none; }
+      .mobile-menu-trigger { display: flex; }
+    }
+
+    /* Mobile Drawer */
+    .mobile-drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 8, 7, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .mobile-drawer-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .mobile-drawer {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 85%;
+      max-width: 400px;
+      height: 100%;
+      background: var(--bg-card-elevated);
+      border-left: 1px solid var(--border-subtle);
+      z-index: 201;
+      padding: 36px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: right 0.45s var(--ease-out-expo);
+      overflow-y: auto;
+    }
+    .mobile-drawer.active {
+      right: 0;
+    }
+    .drawer-nav a {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 32px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--cream);
+      transition: color 0.3s;
+    }
+    .drawer-nav a:hover {
+      color: var(--amber-gold);
+      padding-left: 10px;
+    }
+
+    /* ==========================================================================
+       HERO SECTION WITH 3D CANVAS
+       ========================================================================== */
+    .hero-section {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 120px;
+      padding-bottom: 60px;
+      overflow: hidden;
+    }
+    
+    #coffee-hero-canvas {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: auto;
+      cursor: grab;
+    }
+    #coffee-hero-canvas:active {
+      cursor: grabbing;
+    }
+
+    .hero-bg-glow {
+      position: absolute;
+      top: 15%;
+      right: 10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(229, 160, 78, 0.18) 0%, rgba(216, 93, 56, 0.08) 45%, transparent 70%);
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
+      animation: pulseGlow 8s ease-in-out infinite alternate;
+    }
+    @keyframes pulseGlow {
+      0% { transform: scale(0.9) translate(0, 0); opacity: 0.6; }
+      100% { transform: scale(1.15) translate(30px, -20px); opacity: 0.9; }
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .hero-grid > * {
+      pointer-events: auto;
+    }
+    @media (max-width: 992px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      #coffee-hero-canvas {
+        opacity: 0.65;
+      }
+    }
+
+    .hero-content {
+      max-width: 680px;
+    }
+
+    .hero-live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(26, 21, 17, 0.85);
+      border: 1px solid var(--border-strong);
+      padding: 8px 18px;
+      border-radius: var(--radius-full);
+      margin-bottom: 24px;
+      backdrop-filter: blur(10px);
+    }
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 12px #4ade80;
+      animation: blinkDot 2s infinite;
+    }
+    @keyframes blinkDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+    .hero-live-pill span {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--cream-dim);
+    }
+
+    .hero-title {
+      font-size: clamp(48px, 6.5vw, 92px);
+      font-weight: 300;
+      line-height: 1.02;
+      margin-bottom: 28px;
+      letter-spacing: -0.02em;
+    }
+    .hero-title .title-row {
+      display: block;
+      overflow: hidden;
+    }
+    .hero-title em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--amber-gold);
+      background: linear-gradient(135deg, var(--amber-light) 0%, var(--amber-gold) 60%, var(--terracotta) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      font-size: clamp(16px, 1.25vw, 19px);
+      color: var(--cream-muted);
+      line-height: 1.75;
+      margin-bottom: 40px;
+      max-width: 520px;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 50px;
+    }
+    .btn-hero-primary {
+      padding: 18px 36px;
+      border-radius: var(--radius-full);
+      background: var(--amber-gold);
+      color: var(--bg-dark);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 30px var(--amber-glow);
+      transition: var(--transition-fast);
+    }
+    .btn-hero-primary:hover {
+      background: var(--cream);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 35px rgba(250, 246, 238, 0.28);
+    }
+    .btn-hero-secondary {
+      padding: 18px 32px;
+      border-radius: var(--radius-full);
+      background: rgba(26, 21, 17, 0.65);
+      border: 1px solid var(--border-light);
+      color: var(--cream);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      backdrop-filter: blur(8px);
+      transition: var(--transition-fast);
+    }
+    .btn-hero-secondary:hover {
+      border-color: var(--amber-gold);
+      color: var(--amber-light);
+      transform: translateY(-3px);
+    }
+
+    .hero-stats {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      padding-top: 30px;
+      border-top: 1px solid var(--border-light);
+    }
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--amber-gold);
+      line-height: 1;
+    }
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--cream-muted);
+      margin-top: 6px;
+    }
+
+    .canvas-interaction-badge {
+      position: absolute;
+      bottom: 40px;
+      right: 40px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      background: rgba(19, 15, 12, 0.75);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cream-dim);
+      backdrop-filter: blur(12px);
+      pointer-events: none;
+    }
+    @media (max-width: 992px) {
+      .canvas-interaction-badge { display: none; }
+    }
+
+    /* ==========================================================================
+       DYNAMIC SENSORY MARQUEE
+       ========================================================================== */
+    .marquee-container {
+      position: relative;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 22px 0;
+      overflow: hidden;
+      white-space: nowrap;
+      z-index: 10;
+    }
+    .marquee-inner {
+      display: flex;
+      width: max-content;
+      will-change: transform;
+    }
+    .marquee-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 36px;
+      padding: 0 36px;
+      font-family: var(--font-accent);
+      font-size: clamp(14px, 1.5vw, 18px);
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--cream-dim);
+    }
+    .marquee-star {
+      color: var(--amber-gold);
+      font-size: 18px;
+    }
+
+    /* ==========================================================================
+       SECTION BASICS & EDITORIAL STYLES
+       ========================================================================== */
+    .section-wrap {
+      padding: 140px 0;
+      position: relative;
+    }
+    @media (max-width: 768px) {
+      .section-wrap { padding: 80px 0; }
+    }
+
+    .section-header {
+      margin-bottom: 70px;
+    }
+    .section-header.text-center {
+      text-align: center;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .section-title {
+      font-size: clamp(34px, 4.5vw, 62px);
+      font-weight: 300;
+      margin-top: 16px;
+      margin-bottom: 20px;
+      line-height: 1.08;
+    }
+    .section-title em {
+      font-style: italic;
+      color: var(--amber-gold);
+    }
+    .section-subtitle {
+      color: var(--cream-muted);
+      font-size: clamp(15px, 1.1vw, 18px);
+      line-height: 1.7;
+    }
+
+    /* ==========================================================================
+       STORY / CRAFT SECTION
+       ========================================================================== */
+    .story-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 70px;
+      align-items: center;
+    }
+    @media (max-width: 992px) {
+      .story-grid { grid-template-columns: 1fr; gap: 40px; }
+    }
+
+    .story-visual-wrap {
+      position: relative;
+    }
+    .story-image-main {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      aspect-ratio: 4/5;
+      position: relative;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    .story-image-main img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 1.2s var(--ease-out-expo);
+    }
+    .story-visual-wrap:hover .story-image-main img {
+      transform: scale(1.05);
+    }
+    .story-floating-card {
+      position: absolute;
+      bottom: -30px;
+      right: -30px;
+      background: var(--bg-glass-heavy);
+      border: 1px solid var(--border-strong);
+      padding: 24px 28px;
+      border-radius: var(--radius-md);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+      max-width: 260px;
+    }
+    @media (max-width: 600px) {
+      .story-floating-card { position: static; margin-top: 20px; max-width: 100%; }
+    }
+    .story-floating-card h4 {
+      font-size: 20px;
+      margin-bottom: 6px;
+      color: var(--amber-gold);
+    }
+    .story-floating-card p {
+      font-size: 12.5px;
+      color: var(--cream-muted);
+    }
+
+    .story-copy p {
+      color: var(--cream-dim);
+      font-size: 16.5px;
+      line-height: 1.85;
+      margin-bottom: 24px;
+    }
+    .story-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 36px 0;
+      padding: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+    }
+    .story-metric h5 {
+      font-family: var(--font-display);
+      font-size: 28px;
+      color: var(--amber-gold);
+      margin-bottom: 4px;
+    }
+    .story-metric span {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--cream-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .founder-sign {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-top: 30px;
+    }
+    .founder-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 2px solid var(--amber-gold);
+      overflow: hidden;
+    }
+    .founder-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .founder-info h5 {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 500;
+    }
+    .founder-info span {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--amber-gold);
+    }
+
+    /* ==========================================================================
+       ORIGIN ATLAS
+       ========================================================================== */
+    .origins-section {
+      background: radial-gradient(circle at 50% 50%, #16110d 0%, var(--bg-dark) 80%);
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .origin-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 50px;
+    }
+    .origin-tab-btn {
+      padding: 12px 26px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-light);
+      background: rgba(26, 21, 17, 0.6);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cream-muted);
+      transition: var(--transition-fast);
+    }
+    .origin-tab-btn.active, .origin-tab-btn:hover {
+      background: var(--amber-gold);
+      color: var(--bg-dark);
+      border-color: var(--amber-gold);
+      font-weight: 700;
+      box-shadow: 0 4px 20px var(--amber-glow);
+    }
+
+    .origin-showcase-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      box-shadow: 0 30px 70px rgba(0,0,0,0.6);
+    }
+    @media (max-width: 992px) {
+      .origin-showcase-card { grid-template-columns: 1fr; }
+    }
+    .origin-media {
+      position: relative;
+      min-height: 420px;
+    }
+    .origin-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .origin-score-badge {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      background: var(--bg-glass-heavy);
+      border: 1px solid var(--amber-gold);
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      backdrop-filter: blur(10px);
+    }
+    .origin-score-badge span {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--amber-gold);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+
+    .origin-details {
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    @media (max-width: 768px) {
+      .origin-details { padding: 28px 20px; }
+    }
+    .origin-country {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--amber-gold);
+      margin-bottom: 8px;
+    }
+    .origin-name {
+      font-size: clamp(28px, 3.5vw, 42px);
+      margin-bottom: 16px;
+    }
+    .origin-desc {
+      color: var(--cream-muted);
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    .origin-specs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      padding: 20px 0;
+      border-top: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-light);
+      margin-bottom: 28px;
+    }
+    @media (max-width: 600px) {
+      .origin-specs-grid { grid-template-columns: 1fr; }
+    }
+    .spec-box span {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--cream-muted);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .spec-box strong {
+      font-size: 14.5px;
+      color: var(--cream);
+      font-weight: 500;
+    }
+
+    .flavor-chips-wrap {
+      margin-bottom: 30px;
+    }
+    .flavor-chips-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--cream-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .flavor-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .flavor-chip {
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      background: rgba(229, 160, 78, 0.12);
+      border: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--amber-light);
+    }
+
+    /* ==========================================================================
+       3D CUP CUSTOMIZER & BREW LAB
+       ========================================================================== */
+    .customizer-section {
+      position: relative;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .customizer-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 50px;
+      align-items: center;
+    }
+    @media (max-width: 992px) {
+      .customizer-grid { grid-template-columns: 1fr; }
+    }
+
+    .customizer-canvas-container {
+      position: relative;
+      aspect-ratio: 1/1;
+      max-height: 540px;
+      background: radial-gradient(circle at 50% 50%, #1f1813 0%, var(--bg-dark) 75%);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: inset 0 0 60px rgba(0,0,0,0.8), 0 20px 50px rgba(0,0,0,0.5);
+    }
+    #customizer-3d-canvas {
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+    #customizer-3d-canvas:active {
+      cursor: grabbing;
+    }
+    .canvas-drag-hint {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-glass-heavy);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--amber-gold);
+      pointer-events: none;
+      backdrop-filter: blur(8px);
+    }
+
+    .customizer-panel {
+      background: var(--bg-card-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    @media (max-width: 600px) {
+      .customizer-panel { padding: 24px; }
+    }
+
+    .control-group {
+      margin-bottom: 28px;
+    }
+    .control-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--amber-gold);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .control-label span.val {
+      color: var(--cream);
+    }
+
+    .color-swatches {
+      display: flex;
+      gap: 12px;
+    }
+    .color-swatch {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .color-swatch:hover {
+      transform: scale(1.1);
+    }
+    .color-swatch.active {
+      border-color: var(--amber-gold);
+      transform: scale(1.15);
+      box-shadow: 0 0 15px var(--amber-glow);
+    }
+
+    .pill-selectors {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .pill-opt {
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+      background: rgba(26, 21, 17, 0.5);
+      font-size: 12.5px;
+      color: var(--cream-muted);
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    .pill-opt.active, .pill-opt:hover {
+      background: var(--amber-gold);
+      border-color: var(--amber-gold);
+      color: var(--bg-dark);
+      font-weight: 600;
+    }
+
+    .customizer-summary {
+      padding-top: 24px;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .customizer-price {
+      font-family: var(--font-display);
+      font-size: 32px;
+      color: var(--amber-gold);
+    }
+    .btn-add-custom {
+      flex: 1;
+      padding: 16px 24px;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, var(--amber-gold), var(--terracotta));
+      color: var(--bg-dark);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition-fast);
+      box-shadow: 0 8px 24px var(--amber-glow);
+    }
+    .btn-add-custom:hover {
+      background: var(--cream);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(250, 246, 238, 0.3);
+    }
+
+    /* ==========================================================================
+       CURATED MENU SECTION
+       ========================================================================== */
+    .menu-tabs-bar {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 50px;
+    }
+    .menu-filter-btn {
+      padding: 11px 22px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-light);
+      background: rgba(26, 21, 17, 0.5);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cream-muted);
+      transition: var(--transition-fast);
+    }
+    .menu-filter-btn.active, .menu-filter-btn:hover {
+      background: var(--amber-gold);
+      color: var(--bg-dark);
+      border-color: var(--amber-gold);
+      font-weight: 700;
+    }
+
+    .menu-products-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+    @media (max-width: 1024px) {
+      .menu-products-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .menu-products-grid { grid-template-columns: 1fr; }
+    }
+
+    .product-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.4s var(--ease-out-expo), border-color 0.3s, box-shadow 0.4s;
+    }
+    .product-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--amber-gold);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 30px var(--amber-glow);
+    }
+
+    .product-media {
+      position: relative;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+    }
+    .product-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.8s var(--ease-out-expo);
+    }
+    .product-card:hover .product-media img {
+      transform: scale(1.08);
+    }
+    .product-category-tag {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: var(--bg-glass-heavy);
+      border: 1px solid var(--border-light);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--amber-light);
+      backdrop-filter: blur(8px);
+    }
+    .product-quickview-btn {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--bg-glass-heavy);
+      border: 1px solid var(--border-strong);
+      color: var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s var(--ease-out-expo);
+      backdrop-filter: blur(8px);
+    }
+    .product-card:hover .product-quickview-btn {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .product-quickview-btn:hover {
+      background: var(--amber-gold);
+      color: var(--bg-dark);
+    }
+
+    .product-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
+    }
+    .product-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .product-name {
+      font-size: 21px;
+      font-weight: 500;
+    }
+    .product-price {
+      font-family: var(--font-display);
+      font-size: 22px;
+      color: var(--amber-gold);
+      white-space: nowrap;
+    }
+    .product-desc {
+      font-size: 13.5px;
+      color: var(--cream-muted);
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+    .product-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .product-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--cream-dim);
+      background: rgba(250, 246, 238, 0.05);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .product-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-add-cart {
+      flex: 1;
+      padding: 12px 18px;
+      border-radius: var(--radius-full);
+      background: rgba(26, 21, 17, 0.8);
+      border: 1px solid var(--border-subtle);
+      color: var(--cream);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition-fast);
+    }
+    .product-card:hover .btn-add-cart {
+      background: var(--amber-gold);
+      border-color: var(--amber-gold);
+      color: var(--bg-dark);
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       V60 BREW MASTERCLASS
+       ========================================================================== */
+    .masterclass-section {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .brew-guide-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    @media (max-width: 992px) {
+      .brew-guide-grid { grid-template-columns: 1fr; }
+    }
+
+    .brew-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .brew-step-card {
+      background: var(--bg-card-elevated);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      transition: var(--transition-fast);
+    }
+    .brew-step-card.active, .brew-step-card:hover {
+      border-color: var(--amber-gold);
+      background: rgba(229, 160, 78, 0.08);
+      transform: translateX(10px);
+    }
+    .step-number {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--amber-gold);
+      background: rgba(229, 160, 78, 0.15);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-content h4 {
+      font-size: 19px;
+      margin-bottom: 6px;
+    }
+    .step-content p {
+      font-size: 13.5px;
+      color: var(--cream-muted);
+    }
+    .step-time-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--amber-light);
+      margin-top: 6px;
+      display: inline-block;
+    }
+
+    .brew-timer-box {
+      background: var(--bg-card-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      padding: 48px 36px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+      position: relative;
+    }
+    .timer-circle-wrap {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      margin: 0 auto 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .timer-circle-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+    .timer-circle-bg {
+      fill: none;
+      stroke: rgba(250, 246, 238, 0.1);
+      stroke-width: 6;
+    }
+    .timer-circle-progress {
+      fill: none;
+      stroke: var(--amber-gold);
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-dasharray: 628;
+      stroke-dashoffset: 628;
+      transition: stroke-dashoffset 1s linear;
+    }
+    .timer-readout {
+      font-family: var(--font-mono);
+      font-size: 44px;
+      font-weight: 700;
+      color: var(--cream);
+    }
+    .timer-step-label {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--amber-gold);
+      margin-bottom: 24px;
+    }
+    .timer-controls {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+    }
+    .btn-timer-toggle {
+      padding: 14px 28px;
+      border-radius: var(--radius-full);
+      background: var(--amber-gold);
+      color: var(--bg-dark);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition-fast);
+    }
+    .btn-timer-toggle:hover {
+      background: var(--cream);
+      transform: translateY(-2px);
+    }
+    .btn-timer-reset {
+      padding: 14px 20px;
+      border-radius: var(--radius-full);
+      background: rgba(26, 21, 17, 0.7);
+      border: 1px solid var(--border-light);
+      color: var(--cream-muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .btn-timer-reset:hover {
+      color: var(--cream);
+      border-color: var(--amber-gold);
+    }
+
+    /* ==========================================================================
+       ROASTERY LOCATIONS
+       ========================================================================== */
+    .locations-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+    }
+    @media (max-width: 992px) {
+      .locations-grid { grid-template-columns: 1fr; }
+    }
+
+    .location-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      transition: transform 0.4s var(--ease-out-expo), border-color 0.3s;
+    }
+    .location-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--amber-gold);
+    }
+    .loc-media-wrap {
+      position: relative;
+      aspect-ratio: 16/10;
+      overflow: hidden;
+    }
+    .loc-media-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.8s var(--ease-out-expo);
+    }
+    .location-card:hover .loc-media-wrap img {
+      transform: scale(1.06);
+    }
+    .loc-status-pill {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: var(--bg-glass-heavy);
+      border: 1px solid var(--border-light);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: #4ade80;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      backdrop-filter: blur(8px);
+    }
+
+    .loc-body {
+      padding: 26px;
+    }
+    .loc-title {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+    .loc-address {
+      font-size: 13.5px;
+      color: var(--cream-muted);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+    .loc-meta-row {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-light);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--cream-dim);
+      margin-bottom: 20px;
+    }
+    .btn-book-table {
+      width: 100%;
+      padding: 12px;
+      border-radius: var(--radius-full);
+      background: rgba(229, 160, 78, 0.1);
+      border: 1px solid var(--border-strong);
+      color: var(--amber-light);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: var(--transition-fast);
+    }
+    .btn-book-table:hover {
+      background: var(--amber-gold);
+      color: var(--bg-dark);
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       PRESS & TESTIMONIALS
+       ========================================================================== */
+    .reviews-section {
+      background: radial-gradient(circle at 50% 50%, #17110d 0%, var(--bg-dark) 85%);
+    }
+    .press-quote-box {
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto 80px;
+      padding: 0 20px;
+    }
+    .press-quote-text {
+      font-family: var(--font-display);
+      font-size: clamp(26px, 3.8vw, 44px);
+      font-style: italic;
+      line-height: 1.35;
+      color: var(--cream);
+      margin-bottom: 28px;
+    }
+    .press-quote-text em {
+      color: var(--amber-gold);
+    }
+    .press-source {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--terracotta-vibrant);
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+    @media (max-width: 992px) {
+      .testimonials-grid { grid-template-columns: 1fr; }
+    }
+    .review-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .stars {
+      color: var(--amber-gold);
+      margin-bottom: 16px;
+      display: flex;
+      gap: 4px;
+    }
+    .review-text {
+      font-size: 14.5px;
+      color: var(--cream-dim);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+    .reviewer-meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .reviewer-pic {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 1px solid var(--amber-gold);
+    }
+    .reviewer-pic img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .reviewer-name {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 500;
+    }
+    .reviewer-role {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--cream-muted);
+    }
+
+    /* ==========================================================================
+       NEWSLETTER
+       ========================================================================== */
+    .newsletter-section {
+      background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-card-elevated) 100%);
+      border-top: 1px solid var(--border-subtle);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .newsletter-box {
+      max-width: 620px;
+      margin: 0 auto;
+    }
+    .nl-form-wrap {
+      display: flex;
+      align-items: center;
+      background: rgba(9, 8, 7, 0.8);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-full);
+      padding: 6px;
+      margin-top: 36px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .nl-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 14px 24px;
+      color: var(--cream);
+      font-family: var(--font-body);
+      font-size: 14px;
+      outline: none;
+    }
+    .nl-input::placeholder {
+      color: var(--cream-muted);
+    }
+    .btn-nl-submit {
+      padding: 14px 28px;
+      border-radius: var(--radius-full);
+      background: var(--amber-gold);
+      color: var(--bg-dark);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: var(--transition-fast);
+      white-space: nowrap;
+    }
+    .btn-nl-submit:hover {
+      background: var(--cream);
+      transform: scale(1.03);
+    }
+    @media (max-width: 540px) {
+      .nl-form-wrap { flex-direction: column; border-radius: var(--radius-md); gap: 10px; }
+      .nl-input { width: 100%; }
+      .btn-nl-submit { width: 100%; }
+    }
+
+    /* ==========================================================================
+       MODERN AWWWARDS FOOTER
+       ========================================================================== */
+    footer.site-footer {
+      background: var(--bg-dark);
+      border-top: 1px solid var(--border-subtle);
+      padding: 90px 0 40px;
+    }
+    .footer-top-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 50px;
+      margin-bottom: 70px;
+    }
+    @media (max-width: 992px) {
+      .footer-top-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+    }
+    @media (max-width: 560px) {
+      .footer-top-grid { grid-template-columns: 1fr; }
+    }
+
+    .footer-brand p {
+      font-size: 14px;
+      color: var(--cream-muted);
+      line-height: 1.7;
+      margin-top: 18px;
+      max-width: 320px;
+    }
+    .footer-world-clocks {
+      margin-top: 24px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .world-clock-chip {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--cream-dim);
+      background: var(--bg-card);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-light);
+    }
+    .world-clock-chip span {
+      color: var(--amber-gold);
+    }
+
+    .footer-col h5 {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--amber-gold);
+      margin-bottom: 22px;
+    }
+    .footer-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .footer-col a {
+      font-size: 14px;
+      color: var(--cream-muted);
+      transition: color 0.2s, transform 0.2s;
+      display: inline-block;
+    }
+    .footer-col a:hover {
+      color: var(--cream);
+      transform: translateX(4px);
+    }
+
+    .footer-giant-title {
+      font-family: var(--font-display);
+      font-size: clamp(60px, 14vw, 190px);
+      font-weight: 300;
+      line-height: 0.85;
+      text-align: center;
+      letter-spacing: -0.03em;
+      color: rgba(250, 246, 238, 0.06);
+      user-select: none;
+      margin-bottom: 40px;
+      overflow: hidden;
+    }
+
+    .footer-bottom-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding-top: 30px;
+      border-top: 1px solid var(--border-light);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--cream-muted);
+    }
+    .btn-back-to-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--amber-gold);
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .btn-back-to-top:hover {
+      transform: translateY(-3px);
+      color: var(--cream);
+    }
+
+    /* ==========================================================================
+       CART SLIDE DRAWER
+       ========================================================================== */
+    .cart-drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 8, 7, 0.75);
+      backdrop-filter: blur(10px);
+      z-index: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .cart-drawer-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .cart-drawer {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 90%;
+      max-width: 440px;
+      height: 100%;
+      background: var(--bg-card-elevated);
+      border-left: 1px solid var(--border-subtle);
+      z-index: 501;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.45s var(--ease-out-expo);
+      box-shadow: -20px 0 60px rgba(0,0,0,0.8);
+    }
+    .cart-drawer.open {
+      right: 0;
+    }
+    .cart-drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .cart-drawer-header h3 {
+      font-size: 22px;
+    }
+    .cart-close-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cream-muted);
+      transition: var(--transition-fast);
+    }
+    .cart-close-btn:hover {
+      border-color: var(--amber-gold);
+      color: var(--cream);
+    }
+
+    .cart-free-shipping-bar {
+      margin: 18px 0;
+      padding: 12px 16px;
+      background: rgba(229, 160, 78, 0.08);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+    }
+    .shipping-bar-text {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--amber-light);
+      margin-bottom: 6px;
+      display: block;
+    }
+    .shipping-progress-track {
+      width: 100%;
+      height: 4px;
+      background: rgba(250, 246, 238, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .shipping-progress-fill {
+      height: 100%;
+      width: 40%;
+      background: var(--amber-gold);
+      border-radius: 2px;
+      transition: width 0.4s var(--ease-out-expo);
+    }
+
+    .cart-items-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .cart-item-row {
+      display: flex;
+      gap: 14px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .cart-item-img {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .cart-item-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .cart-item-info {
+      flex: 1;
+    }
+    .cart-item-title {
+      font-size: 15px;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+    .cart-item-variant {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--cream-muted);
+      margin-bottom: 6px;
+    }
+    .cart-item-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cart-item-price {
+      font-family: var(--font-display);
+      font-size: 16px;
+      color: var(--amber-gold);
+    }
+    .cart-qty-ctrl {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-full);
+      padding: 2px 8px;
+    }
+    .cart-qty-ctrl button {
+      font-size: 13px;
+      color: var(--cream);
+      padding: 0 4px;
+    }
+    .cart-qty-ctrl span {
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .cart-empty-state {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--cream-muted);
+    }
+
+    .cart-drawer-footer {
+      padding-top: 20px;
+      border-top: 1px solid var(--border-light);
+    }
+    .cart-totals-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--cream-muted);
+    }
+    .cart-totals-row.final {
+      font-size: 18px;
+      font-family: var(--font-display);
+      color: var(--cream);
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-light);
+    }
+    .cart-totals-row.final strong {
+      color: var(--amber-gold);
+    }
+    .btn-checkout {
+      width: 100%;
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: var(--radius-full);
+      background: var(--amber-gold);
+      color: var(--bg-dark);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: var(--transition-fast);
+    }
+    .btn-checkout:hover {
+      background: var(--cream);
+      transform: translateY(-2px);
+    }
+
+    /* ==========================================================================
+       INTERACTIVE MODALS
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 8, 7, 0.85);
+      backdrop-filter: blur(14px);
+      z-index: 600;
+      opacity: 0;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      transition: opacity 0.35s;
+    }
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-card {
+      background: var(--bg-card-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 560px;
+      padding: 40px;
+      position: relative;
+      transform: scale(0.92);
+      transition: transform 0.35s var(--ease-out-expo);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.8);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-backdrop.active .modal-card {
+      transform: scale(1);
+    }
+    @media (max-width: 600px) {
+      .modal-card { padding: 24px; }
+    }
+    .modal-close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cream-muted);
+      transition: var(--transition-fast);
+    }
+    .modal-close-btn:hover {
+      border-color: var(--amber-gold);
+      color: var(--cream);
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--amber-gold);
+      display: block;
+      margin-bottom: 8px;
+    }
+    .form-control {
+      width: 100%;
+      background: rgba(9, 8, 7, 0.6);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      color: var(--cream);
+      font-family: var(--font-body);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus {
+      border-color: var(--amber-gold);
+    }
+
+    /* Toast Notification */
+    .toast-notice {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--bg-card-elevated);
+      border: 1px solid var(--amber-gold);
+      padding: 14px 24px;
+      border-radius: var(--radius-full);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      letter-spacing: 0.08em;
+      color: var(--cream);
+      z-index: 99999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: transform 0.4s var(--ease-out-expo), opacity 0.4s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .toast-notice.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Film Grain Overlay -->
+  <div class="grain-overlay"></div>
+
+  <!-- Custom Awwwards Cursor -->
+  <div class="custom-cursor" id="custom-cursor"></div>
+  <div class="cursor-follower" id="cursor-follower"><span>DRAG</span></div>
+
+  <!-- Scroll Progress Indicator -->
+  <div class="scroll-progress" id="scroll-progress"></div>
+
+  <!-- PAGE PRELOADER -->
+  <div class="preloader" id="preloader">
+    <div class="preloader-counter" id="preloader-counter">00</div>
+    <div class="preloader-bar-wrap">
+      <div class="preloader-bar" id="preloader-bar"></div>
+    </div>
+    <div class="preloader-text">Warming The Roaster &nbsp;·&nbsp; Dialing The Grind</div>
+  </div>
+
+  <!-- SITE HEADER & NAVIGATION -->
+  <header class="site-header" id="site-header">
+    <div class="container nav-container">
+      <a href="#hero" class="brand-logo">
+        <span>COFFEE <em>CAFÉ</em></span>
+        <span class="logo-badge">ROASTERY 2.0</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#story">Our Craft</a>
+        <a href="#origins">Origin Atlas</a>
+        <a href="#customizer">3D Brew Lab</a>
+        <a href="#menu">Pouring Menu</a>
+        <a href="#masterclass">V60 Guide</a>
+        <a href="#locations">Rooms</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="sound-toggle" id="sound-toggle" title="Toggle Cafe Ambience Soundscape">
+          <div class="sound-bars">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <span class="sound-text">Sound: Off</span>
+        </button>
+
+        <button class="cart-btn" id="cart-open-btn" aria-label="Open Order Bag">
+          <i data-lucide="shopping-bag" style="width:18px; height:18px;"></i>
+          <span class="cart-badge" id="cart-badge-count">1</span>
+        </button>
+
+        <button class="btn-reserve" id="nav-reserve-btn">
+          <span>Reserve Table</span>
+        </button>
+
+        <button class="mobile-menu-trigger" id="mobile-menu-btn" aria-label="Toggle Navigation">
+          <i data-lucide="menu" style="width:20px; height:20px;"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer -->
+  <div class="mobile-drawer-overlay" id="mobile-drawer-overlay"></div>
+  <div class="mobile-drawer" id="mobile-drawer">
+    <div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px;">
+        <span class="brand-logo" style="font-size:20px;">COFFEE <em>CAFÉ</em></span>
+        <button id="mobile-drawer-close" style="color:var(--cream);"><i data-lucide="x"></i></button>
+      </div>
+      <nav class="drawer-nav">
+        <a href="#hero" class="drawer-link">Home</a>
+        <a href="#story" class="drawer-link">Our Craft</a>
+        <a href="#origins" class="drawer-link">Origin Atlas</a>
+        <a href="#customizer" class="drawer-link">3D Brew Lab</a>
+        <a href="#menu" class="drawer-link">Pouring Menu</a>
+        <a href="#masterclass" class="drawer-link">V60 Guide</a>
+        <a href="#locations" class="drawer-link">Roastery Rooms</a>
+      </nav>
+    </div>
+    <div style="padding-top:30px; border-top:1px solid var(--border-light);">
+      <button class="btn-hero-primary" id="mobile-reserve-btn" style="width:100%; justify-content:center;">
+        Reserve A Table
+      </button>
+    </div>
+  </div>
+
+  <!-- HERO SECTION WITH THREE.JS 3D CANVAS -->
+  <section class="hero-section" id="hero">
+    <div class="hero-bg-glow"></div>
+    <canvas id="coffee-hero-canvas"></canvas>
+
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <div class="hero-live-pill">
+          <div class="live-dot"></div>
+          <span>LIVE ROASTING: ETHIOPIA YIRGACHEFFE &nbsp;·&nbsp; BATCH #418</span>
+        </div>
+
+        <h1 class="hero-title">
+          <span class="title-row"><span>Slow mornings,</span></span>
+          <span class="title-row"><span><em>sculpted roasts.</em></span></span>
+        </h1>
+
+        <p class="hero-desc">
+          An architectural specialty roastery engineered around micro-lot single origins, slow extraction physics, and the quiet ritual of an unhurried morning.
+        </p>
+
+        <div class="hero-cta-group">
+          <a href="#customizer" class="btn-hero-primary">
+            <span>3D Brew Customizer</span>
+            <i data-lucide="sparkles" style="width:16px; height:16px;"></i>
+          </a>
+          <a href="#menu" class="btn-hero-secondary">
+            <span>Explore Menu</span>
+            <i data-lucide="arrow-down-right" style="width:16px; height:16px;"></i>
+          </a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-number">91.5</span>
+            <span class="stat-label">SCA Cupping Score</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">100%</span>
+            <span class="stat-label">Direct Farm Trade</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">48<small style="font-size:16px;">h</small></span>
+            <span class="stat-label">Peak Rest Time</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="canvas-interaction-badge">
+      <i data-lucide="rotate-3d" style="width:14px; height:14px; color:var(--amber-gold);"></i>
+      <span>Interactive 3D Stage &nbsp;·&nbsp; Drag To Orbit</span>
+    </div>
+  </section>
+
+  <!-- DYNAMIC SENSORY MARQUEE -->
+  <div class="marquee-container">
+    <div class="marquee-inner" id="marquee-track">
+      <div class="marquee-item">MICRO-LOT ORIGINS <span class="marquee-star">✦</span></div>
+      <div class="marquee-item">48-HOUR RESTED <span class="marquee-star">✦</span></div>
+      <div class="marquee-item">SLOW WATER EXTRACTION <span class="marquee-star">✦</span></div>
+      <div class="marquee-item">DIRECT TRADE ETHICS <span class="marquee-star">✦</span></div>
+      <div class="marquee-item">CERAMIC CRAFT <span class="marquee-star">✦</span></div>
+      <div class="marquee-item">MICRO-LOT ORIGINS <span class="marquee-star">✦</span></div>
+      <div class="marquee-item">48-HOUR RESTED <span class="marquee-star">✦</span></div>
+      <div class="marquee-item">SLOW WATER EXTRACTION <span class="marquee-star">✦</span></div>
+      <div class="marquee-item">DIRECT TRADE ETHICS <span class="marquee-star">✦</span></div>
+      <div class="marquee-item">CERAMIC CRAFT <span class="marquee-star">✦</span></div>
+    </div>
+  </div>
+
+  <!-- STORY & PHILOSOPHY -->
+  <section class="section-wrap" id="story">
+    <div class="container">
+      <div class="story-grid">
+        <div class="story-visual-wrap">
+          <div class="story-image-main">
+            <img src="https://images.pexels.com/photos/34164459/pexels-photo-34164459.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Sunlit modernist café roastery counter" loading="lazy">
+          </div>
+          <div class="story-floating-card">
+            <h4>Cast-Iron Drum</h4>
+            <p>San Franciscan 12kg roaster calibrating roast profiles within 0.1°C thermal thresholds.</p>
+          </div>
+        </div>
+
+        <div class="story-copy">
+          <span class="mono-eyebrow">The Philosophy</span>
+          <h2 class="section-title">Coffee engineered with <em>uncompromising patience.</em></h2>
+          <p>
+            We founded Coffee Café with a single guiding thesis: haste is the enemy of nuance. Every bean we roast is sourced directly from high-altitude estates above 1,800 meters, roasted in micro-batches twice weekly, and rested for exactly 48 hours to unlock complex aromatic esters.
+          </p>
+          <p>
+            Our baristas operate not as speed servers, but as precision sensory extractors — calibrating TDS (Total Dissolved Solids), water mineral hardness, and grind particle distribution with scientific rigor.
+          </p>
+
+          <div class="story-metrics">
+            <div class="story-metric">
+              <h5>1:16.5</h5>
+              <span>Golden Brew Ratio</span>
+            </div>
+            <div class="story-metric">
+              <h5>93.5°C</h5>
+              <span>Dialed Extraction Temp</span>
+            </div>
+          </div>
+
+          <div class="founder-sign">
+            <div class="founder-avatar">
+              <img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Master Roaster" loading="lazy">
+            </div>
+            <div class="founder-info">
+              <h5>Mateo Vance</h5>
+              <span>Lead Roaster & Q-Grader Instructor</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ORIGIN ATLAS -->
+  <section class="section-wrap origins-section" id="origins">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="mono-eyebrow">Origin Atlas</span>
+        <h2 class="section-title">Traceable to the <em>exact plot & elevation.</em></h2>
+        <p class="section-subtitle">
+          Explore four distinct micro-lot terroirs, cupped and scored weekly by our sensory lab.
+        </p>
+      </div>
+
+      <div class="origin-tabs">
+        <button class="origin-tab-btn active" data-origin="ethiopia">Ethiopia Yirgacheffe</button>
+        <button class="origin-tab-btn" data-origin="colombia">Colombia Huila Geisha</button>
+        <button class="origin-tab-btn" data-origin="guatemala">Guatemala Antigua</button>
+        <button class="origin-tab-btn" data-origin="sumatra">Sumatra Gayo Anaerobic</button>
+      </div>
+
+      <div class="origin-showcase-card" id="origin-card-content"></div>
+    </div>
+  </section>
+
+  <!-- 3D CUP CUSTOMIZER & BREW STUDIO -->
+  <section class="section-wrap customizer-section" id="customizer">
+    <div class="container">
+      <div class="section-header">
+        <span class="mono-eyebrow">3D Interactive Studio</span>
+        <h2 class="section-title">Sculpt your <em>bespoke cup.</em></h2>
+        <p class="section-subtitle">
+          Customize ceramic glaze, latte art geometry, single-origin base, and milk formulation in real-time.
+        </p>
+      </div>
+
+      <div class="customizer-grid">
+        <div class="customizer-canvas-container">
+          <canvas id="customizer-3d-canvas"></canvas>
+          <div class="canvas-drag-hint">
+            <i data-lucide="orbit" style="width:12px; height:12px; display:inline-block; vertical-align:middle;"></i> Drag to examine ceramic glaze
+          </div>
+        </div>
+
+        <div class="customizer-panel">
+          <div class="control-group">
+            <div class="control-label">
+              <span>Ceramic Glaze Finish</span>
+              <span class="val" id="glaze-name-display">Obsidian Noir Matte</span>
+            </div>
+            <div class="color-swatches">
+              <div class="color-swatch active" style="background:#181512;" data-glaze="obsidian" data-title="Obsidian Noir Matte" title="Obsidian Noir"></div>
+              <div class="color-swatch" style="background:#F2EBE0;" data-glaze="linen" data-title="Linen Oat Glaze" title="Linen Oat"></div>
+              <div class="color-swatch" style="background:#D85D38;" data-glaze="terracotta" data-title="Ember Terracotta" title="Ember Terracotta"></div>
+              <div class="color-swatch" style="background:#3C4F41;" data-glaze="sage" data-title="Botanical Forest Sage" title="Forest Sage"></div>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Latte Art Pattern</span>
+              <span class="val" id="art-name-display">Barista Rosetta</span>
+            </div>
+            <div class="pill-selectors">
+              <div class="pill-opt active" data-art="rosetta">✦ Barista Rosetta</div>
+              <div class="pill-opt" data-art="swan">✦ Elegant Swan</div>
+              <div class="pill-opt" data-art="heart">✦ Classic Heart</div>
+              <div class="pill-opt" data-art="crema">✦ Golden Crema</div>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Extraction Method</span>
+              <span class="val" id="brew-name-display">Ristretto Double Shot</span>
+            </div>
+            <div class="pill-selectors">
+              <div class="pill-opt active" data-brew="espresso" data-price="4.75">Ristretto Shot (+$0.00)</div>
+              <div class="pill-opt" data-brew="chemex" data-price="5.50">V60 Chemex (+$0.75)</div>
+              <div class="pill-opt" data-brew="oatflat" data-price="5.25">Oat Flat White (+$0.50)</div>
+              <div class="pill-opt" data-brew="nitro" data-price="5.75">Nitro Cold Drip (+$1.00)</div>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Botanical Accent</span>
+              <span class="val" id="infusion-name-display">Pure Estate Notes</span>
+            </div>
+            <div class="pill-selectors">
+              <div class="pill-opt active" data-accent="none">Pure Estate</div>
+              <div class="pill-opt" data-accent="vanilla">Bourbon Vanilla</div>
+              <div class="pill-opt" data-accent="cardamom">Wild Cardamom</div>
+              <div class="pill-opt" data-accent="lavender">French Lavender</div>
+            </div>
+          </div>
+
+          <div class="customizer-summary">
+            <div>
+              <span style="font-family:var(--font-mono); font-size:10px; color:var(--cream-muted); text-transform:uppercase; letter-spacing:0.1em; display:block;">Total Per Cup</span>
+              <span class="customizer-price" id="custom-price-display">$4.75</span>
+            </div>
+            <button class="btn-add-custom" id="btn-add-custom-cup">
+              <i data-lucide="plus-circle" style="width:16px; height:16px;"></i>
+              <span>Add Custom Cup To Bag</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CURATED POURING MENU -->
+  <section class="section-wrap" id="menu">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="mono-eyebrow">The Pouring Menu</span>
+        <h2 class="section-title">Curated daily on the <em>espresso & brew bar.</em></h2>
+        <p class="section-subtitle">
+          Small-batch roasted, measured to 0.05g accuracy, and served in thermal double-walled ceramics.
+        </p>
+      </div>
+
+      <div class="menu-tabs-bar">
+        <button class="menu-filter-btn active" data-filter="all">All Selections</button>
+        <button class="menu-filter-btn" data-filter="espresso">Espresso Bar</button>
+        <button class="menu-filter-btn" data-filter="pourover">Slow Pour-Over</button>
+        <button class="menu-filter-btn" data-filter="cold">Cold & Nitro</button>
+        <button class="menu-filter-btn" data-filter="bakery">Artisanal Bakery</button>
+        <button class="menu-filter-btn" data-filter="beans">Retail Whole Beans</button>
+      </div>
+
+      <div class="menu-products-grid" id="products-grid"></div>
+    </div>
+  </section>
+
+  <!-- V60 BREW MASTERCLASS -->
+  <section class="section-wrap masterclass-section" id="masterclass">
+    <div class="container">
+      <div class="section-header">
+        <span class="mono-eyebrow">Pour-Over Protocol</span>
+        <h2 class="section-title">The 4-Step <em>V60 Extraction Guide.</em></h2>
+        <p class="section-subtitle">
+          Follow our barista champion recipe. Press start to run our live synchronized brew timer with pulse audio chimes.
+        </p>
+      </div>
+
+      <div class="brew-guide-grid">
+        <div class="brew-timeline">
+          <div class="brew-step-card active" data-step="1" data-duration="45" data-title="01. The Bloom (0:00 - 0:45)" data-desc="Pour 50g of 93°C water in gentle concentric circles. Allow grounds to degas CO2 and bloom for maximum sweetness.">
+            <div class="step-number">01</div>
+            <div class="step-content">
+              <h4>The Bloom & Degassing</h4>
+              <p>Pour 50g water in concentric circles. Let freshly roasted coffee degas CO2 completely.</p>
+              <span class="step-time-badge">Duration: 45s &nbsp;·&nbsp; Target: 50g</span>
+            </div>
+          </div>
+
+          <div class="brew-step-card" data-step="2" data-duration="45" data-title="02. First Spiral Pour (0:45 - 1:30)" data-desc="Pour steadily from 6cm height in slow spirals outwards to 150g total weight. Maintain steady thermal bed.">
+            <div class="step-number">02</div>
+            <div class="step-content">
+              <h4>First Spiral Infusion</h4>
+              <p>Pour steadily from center outwards to reach 150g weight. Maintain steady slurry agitation.</p>
+              <span class="step-time-badge">Duration: 45s &nbsp;·&nbsp; Target: 150g</span>
+            </div>
+          </div>
+
+          <div class="brew-step-card" data-step="3" data-duration="45" data-title="03. Second Body Pour (1:30 - 2:15)" data-desc="Gentle center pour bringing total slurry volume to 250g. Extracting deep chocolate and caramelized notes.">
+            <div class="step-number">03</div>
+            <div class="step-content">
+              <h4>Body Extraction</h4>
+              <p>Gentle center pour bringing total weight to 250g, drawing out caramelized honey notes.</p>
+              <span class="step-time-badge">Duration: 45s &nbsp;·&nbsp; Target: 250g</span>
+            </div>
+          </div>
+
+          <div class="brew-step-card" data-step="4" data-duration="45" data-title="04. Final Drawdown (2:15 - 3:00)" data-desc="Final top-up to 300g with a single gentle swirl. Let gravity filter the flat spent coffee bed evenly.">
+            <div class="step-number">04</div>
+            <div class="step-content">
+              <h4>Final Drawdown & Swirl</h4>
+              <p>Top off to 300g. Give one gentle carafe swirl for an immaculate flat spent coffee bed.</p>
+              <span class="step-time-badge">Duration: 45s &nbsp;·&nbsp; Target: 300g</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="brew-timer-box">
+          <div class="timer-step-label" id="timer-status-title">Step 01: The Bloom Phase</div>
+
+          <div class="timer-circle-wrap">
+            <svg class="timer-circle-svg" viewBox="0 0 220 220">
+              <circle class="timer-circle-bg" cx="110" cy="110" r="95"></circle>
+              <circle class="timer-circle-progress" id="timer-progress-ring" cx="110" cy="110" r="95"></circle>
+            </svg>
+            <div class="timer-readout" id="timer-readout-text">00:45</div>
+          </div>
+
+          <p style="font-size:14px; color:var(--cream-muted); margin-bottom:28px;" id="timer-step-instruction">
+            Pour 50g of 93°C water in concentric spirals. Watch the coffee crust bloom.
+          </p>
+
+          <div class="timer-controls">
+            <button class="btn-timer-toggle" id="btn-timer-play">
+              <i data-lucide="play" style="width:16px; height:16px;"></i>
+              <span id="btn-timer-text">Start Brew Timer</span>
+            </button>
+            <button class="btn-timer-reset" id="btn-timer-reset">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROASTERY LOCATIONS -->
+  <section class="section-wrap" id="locations">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="mono-eyebrow">Our Sanctuaries</span>
+        <h2 class="section-title">Three rooms, <em>one slow rhythm.</em></h2>
+        <p class="section-subtitle">
+          Architectural spaces sculpted with natural oak, raw travertine, and acoustics tuned for morning contemplation.
+        </p>
+      </div>
+
+      <div class="locations-grid">
+        <div class="location-card">
+          <div class="loc-media-wrap">
+            <img src="https://images.pexels.com/photos/930402/pexels-photo-930402.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Mill District Flagship Roastery" loading="lazy">
+            <span class="loc-status-pill">● Open Now · Until 7 PM</span>
+          </div>
+          <div class="loc-body">
+            <h3 class="loc-title">Mill District Flagship</h3>
+            <p class="loc-address">142 Foundry Lane, Industrial Arts Quarter<br>Roasting live Mon, Wed, Fri</p>
+            <div class="loc-meta-row">
+              <span>Seating: 42 Guests</span>
+              <span>Filter Bar & Cupping Lab</span>
+            </div>
+            <button class="btn-book-table" data-location="Mill District Flagship">Reserve Counter Seat</button>
+          </div>
+        </div>
+
+        <div class="location-card">
+          <div class="loc-media-wrap">
+            <img src="https://images.pexels.com/photos/33683554/pexels-photo-33683554.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Riverside Water Sanctuary" loading="lazy">
+            <span class="loc-status-pill">● Open Now · Until 8 PM</span>
+          </div>
+          <div class="loc-body">
+            <h3 class="loc-title">Riverside Glasshouse</h3>
+            <p class="loc-address">8 Harbour Promenade, Waterfront Terrace<br>Sun-drenched botanical atrium</p>
+            <div class="loc-meta-row">
+              <span>Seating: 65 Guests</span>
+              <span>Bakery & Cold Brew Bar</span>
+            </div>
+            <button class="btn-book-table" data-location="Riverside Glasshouse">Reserve Terrace Table</button>
+          </div>
+        </div>
+
+        <div class="location-card">
+          <div class="loc-media-wrap">
+            <img src="https://images.pexels.com/photos/30488731/pexels-photo-30488731.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Old Quarter Heritage Atelier" loading="lazy">
+            <span class="loc-status-pill">● Open Now · Until 6 PM</span>
+          </div>
+          <div class="loc-body">
+            <h3 class="loc-title">Old Quarter Heritage</h3>
+            <p class="loc-address">27 Chapel Row, Historic Cloister<br>Intimate vinyl listening booth</p>
+            <div class="loc-meta-row">
+              <span>Seating: 24 Guests</span>
+              <span>Siphon Bar & Omakase</span>
+            </div>
+            <button class="btn-book-table" data-location="Old Quarter Heritage">Reserve Tasting Booth</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRESS & GUEST REVIEWS -->
+  <section class="section-wrap reviews-section">
+    <div class="container">
+      <div class="press-quote-box">
+        <p class="press-quote-text">
+          "Coffee Café isn't just a roastery; it's a monastic sanctuary for <em>sensory calibration</em> in an otherwise frantic world."
+        </p>
+        <span class="press-source">— STANDART MAGAZINE &nbsp;·&nbsp; BEST COFFEE SPACE AWARD</span>
+      </div>
+
+      <div class="testimonials-grid">
+        <div class="review-card">
+          <div>
+            <div class="stars">★★★★★</div>
+            <p class="review-text">
+              "The Ethiopia Yirgacheffe poured on the V60 was a revelatory experience — notes of candied bergamot and jasmine that lingered like fine wine. The 3D customizer on the website made ordering a dream."
+            </p>
+          </div>
+          <div class="reviewer-meta">
+            <div class="reviewer-pic">
+              <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=150" alt="Elena Rostova" loading="lazy">
+            </div>
+            <div>
+              <div class="reviewer-name">Elena Rostova</div>
+              <div class="reviewer-role">Architect & Coffee Enthusiast</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div>
+            <div class="stars">★★★★★</div>
+            <p class="review-text">
+              "I’ve ordered specialty beans across Europe and Tokyo, but their 48-hour resting protocol genuinely delivers the most balanced crema I've ever pulled on my home lever machine."
+            </p>
+          </div>
+          <div class="reviewer-meta">
+            <div class="reviewer-pic">
+              <img src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=150" alt="Julian Sterling" loading="lazy">
+            </div>
+            <div>
+              <div class="reviewer-name">Julian Sterling</div>
+              <div class="reviewer-role">Culinary Director, London</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div>
+            <div class="stars">★★★★★</div>
+            <p class="review-text">
+              "The atmosphere in the Mill District room combined with the unhurried craft of their baristas is unmatched. The custom oat flat white with bourbon vanilla is a morning staple."
+            </p>
+          </div>
+          <div class="reviewer-meta">
+            <div class="reviewer-pic">
+              <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150" alt="Sarah Chen" loading="lazy">
+            </div>
+            <div>
+              <div class="reviewer-name">Sarah Chen</div>
+              <div class="reviewer-role">Design Critic, Monocle</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="section-wrap newsletter-section">
+    <div class="container">
+      <div class="newsletter-box">
+        <span class="mono-eyebrow">Private Roaster Drops</span>
+        <h2 class="section-title" style="margin-top:14px;">Fresh off the <em>cast-iron roaster.</em></h2>
+        <p class="section-subtitle">
+          Subscribe for early access to rare micro-lot allocations, invitation-only cupping sessions, and 15% off your first coffee bag.
+        </p>
+
+        <form class="nl-form-wrap" id="newsletter-form">
+          <input type="email" class="nl-input" id="nl-email-input" placeholder="Enter your email for private drops..." required>
+          <button type="submit" class="btn-nl-submit">Claim 15% Code</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODERN FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top-grid">
+        <div class="footer-brand">
+          <a href="#hero" class="brand-logo" style="font-size:26px;">COFFEE <em>CAFÉ</em></a>
+          <p>
+            An award-winning sanctuary engineered around single-origin coffee physics, slow mornings, and timeless ceramic design.
+          </p>
+          <div class="footer-world-clocks">
+            <div class="world-clock-chip">LONDON <span id="clock-london">12:00</span></div>
+            <div class="world-clock-chip">NEW YORK <span id="clock-ny">07:00</span></div>
+            <div class="world-clock-chip">TOKYO <span id="clock-tokyo">21:00</span></div>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h5>Sensory Bar</h5>
+          <ul>
+            <li><a href="#menu">Single Origin Espresso</a></li>
+            <li><a href="#menu">V60 Chemex Flight</a></li>
+            <li><a href="#menu">Nitro Cold Extractions</a></li>
+            <li><a href="#customizer">3D Cup Studio</a></li>
+            <li><a href="#masterclass">Brewing Protocols</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Sanctuaries</h5>
+          <ul>
+            <li><a href="#locations">Mill District Flagship</a></li>
+            <li><a href="#locations">Riverside Glasshouse</a></li>
+            <li><a href="#locations">Old Quarter Heritage</a></li>
+            <li><a href="#origins">Origin Atlas</a></li>
+            <li><a href="#story">Roasting Philosophy</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Concierge</h5>
+          <ul>
+            <li><a href="#" id="footer-order-link">Track Online Order</a></li>
+            <li><a href="#" id="footer-reserve-link">Table Reservations</a></li>
+            <li><a href="#">Wholesale Roasting</a></li>
+            <li><a href="#">Barista Academy</a></li>
+            <li><a href="#">Sustainability Report</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-giant-title">COFFEE CAFÉ</div>
+
+      <div class="footer-bottom-bar">
+        <span>© 2026 COFFEE CAFÉ ROASTERY. ALL RIGHTS RESERVED.</span>
+        <span>SPECIALTY COFFEE ASSOCIATION CERTIFIED &nbsp;·&nbsp; DIRECT TRADE</span>
+        <div class="btn-back-to-top" id="btn-back-to-top">
+          <span>Back To Top</span>
+          <i data-lucide="arrow-up" style="width:14px; height:14px;"></i>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CART SLIDE DRAWER -->
+  <div class="cart-drawer-backdrop" id="cart-drawer-backdrop"></div>
+  <div class="cart-drawer" id="cart-drawer">
+    <div class="cart-drawer-header">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <i data-lucide="shopping-bag" style="color:var(--amber-gold);"></i>
+        <h3>Your Coffee Bag</h3>
+      </div>
+      <button class="cart-close-btn" id="cart-close-btn"><i data-lucide="x"></i></button>
+    </div>
+
+    <div class="cart-free-shipping-bar">
+      <span class="shipping-bar-text" id="shipping-progress-text">Add $12.50 more for complimentary pastry delivery!</span>
+      <div class="shipping-progress-track">
+        <div class="shipping-progress-fill" id="shipping-progress-fill" style="width: 45%;"></div>
+      </div>
+    </div>
+
+    <div class="cart-items-list" id="cart-items-container"></div>
+
+    <div class="cart-drawer-footer">
+      <div class="cart-totals-row">
+        <span>Subtotal</span>
+        <span id="cart-subtotal">$0.00</span>
+      </div>
+      <div class="cart-totals-row">
+        <span>Specialty Tax (Estimated)</span>
+        <span id="cart-tax">$0.00</span>
+      </div>
+      <div class="cart-totals-row final">
+        <span>Estimated Total</span>
+        <strong id="cart-total">$0.00</strong>
+      </div>
+      <button class="btn-checkout" id="btn-checkout-modal">Proceed To Express Checkout</button>
+    </div>
+  </div>
+
+  <!-- TABLE RESERVATION MODAL -->
+  <div class="modal-backdrop" id="reserve-modal-backdrop">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="modal-reserve-close"><i data-lucide="x"></i></button>
+      <span class="mono-eyebrow">Table Reservation</span>
+      <h3 style="font-size:28px; margin:10px 0 20px;">Book a slow morning table</h3>
+      
+      <form id="reservation-form">
+        <div class="form-group">
+          <label class="form-label">Select Sanctuary Room</label>
+          <select class="form-control" id="res-location">
+            <option value="Mill District Flagship">Mill District Flagship (Industrial Arts)</option>
+            <option value="Riverside Glasshouse">Riverside Glasshouse (Waterfront Terrace)</option>
+            <option value="Old Quarter Heritage">Old Quarter Heritage (Historic Cloister)</option>
+          </select>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" id="res-date" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Time Slot</label>
+            <select class="form-control" id="res-time">
+              <option>08:30 AM — First Light Brew</option>
+              <option>10:00 AM — Morning Cupping</option>
+              <option>12:30 PM — Afternoon Flight</option>
+              <option>03:00 PM — Siphon Ritual</option>
+              <option>05:00 PM — Golden Hour Espresso</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="form-group">
+            <label class="form-label">Party Size</label>
+            <select class="form-control" id="res-guests">
+              <option>1 Guest (Solo Counter Seat)</option>
+              <option selected>2 Guests (Quiet Corner Table)</option>
+              <option>3 - 4 Guests (Oak Table)</option>
+              <option>5 - 8 Guests (Private Cupping Room)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-control" placeholder="Jane Doe" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Confirmation</label>
+          <input type="email" class="form-control" placeholder="jane@example.com" required>
+        </div>
+
+        <button type="submit" class="btn-checkout" style="margin-top:10px;">
+          Confirm Reservation
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Pill -->
+  <div class="toast-notice" id="toast-notice">
+    <i data-lucide="check-circle" style="width:18px; height:18px;"></i>
+    <span id="toast-text">Custom Brew added to your Coffee Bag!</span>
+  </div>
+
+  <!-- APPLICATION JAVASCRIPT -->
+  <script>
+    lucide.createIcons();
+
+    /* LENIS SMOOTH SCROLL & GSAP SCROLLTRIGGER SYNC */
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 0.9,
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    gsap.registerPlugin(ScrollTrigger);
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+    gsap.ticker.lagSmoothing(0);
+
+    /* AWWWARDS CUSTOM CURSOR */
+    const cursor = document.getElementById('custom-cursor');
+    const follower = document.getElementById('cursor-follower');
+    const followerSpan = follower.querySelector('span');
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let cursorX = mouseX;
+    let cursorY = mouseY;
+    let followerX = mouseX;
+    let followerY = mouseY;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    }, { passive: true });
+
+    function renderCursor() {
+      cursorX += (mouseX - cursorX) * 0.7;
+      cursorY += (mouseY - cursorY) * 0.7;
+      cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0)`;
+
+      followerX += (mouseX - followerX) * 0.15;
+      followerY += (mouseY - followerY) * 0.15;
+      follower.style.transform = `translate3d(${followerX}px, ${followerY}px, 0)`;
+
+      requestAnimationFrame(renderCursor);
+    }
+    requestAnimationFrame(renderCursor);
+
+    function setupCursorHover() {
+      document.querySelectorAll('a, button, .product-card, .origin-tab-btn, .pill-opt, .color-swatch, .brew-step-card, canvas').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+          document.body.classList.add('cursor-hover');
+          if (el.tagName === 'CANVAS') followerSpan.textContent = 'ROTATE';
+          else if (el.classList.contains('product-card')) followerSpan.textContent = 'VIEW';
+          else if (el.classList.contains('btn-add-custom') || el.classList.contains('btn-add-cart')) followerSpan.textContent = 'POUR';
+          else followerSpan.textContent = 'EXPLORE';
+        });
+        el.addEventListener('mouseleave', () => {
+          document.body.classList.remove('cursor-hover');
+          followerSpan.textContent = 'DRAG';
+        });
+      });
+    }
+    setupCursorHover();
+
+    /* PAGE PRELOADER & HERO REVEAL ANIMATIONS */
+    const preloader = document.getElementById('preloader');
+    const preloaderCounter = document.getElementById('preloader-counter');
+    const preloaderBar = document.getElementById('preloader-bar');
+    let loadProgress = 0;
+
+    const loadInterval = setInterval(() => {
+      loadProgress += Math.floor(Math.random() * 8) + 4;
+      if (loadProgress > 100) loadProgress = 100;
+      preloaderCounter.textContent = loadProgress.toString().padStart(2, '0');
+      preloaderBar.style.width = loadProgress + '%';
+
+      if (loadProgress >= 100) {
+        clearInterval(loadInterval);
+        setTimeout(() => {
+          gsap.to(preloader, {
+            yPercent: -100,
+            duration: 1.1,
+            ease: 'expo.inOut',
+            onComplete: () => {
+              preloader.style.display = 'none';
+              animateHeroEntry();
+            }
+          });
+        }, 300);
+      }
+    }, 40);
+
+    function animateHeroEntry() {
+      const tl = gsap.timeline({ defaults: { ease: 'power4.out', duration: 1.2 } });
+      tl.from('.hero-live-pill', { y: 30, opacity: 0, duration: 0.8 })
+        .from('.hero-title .title-row span', { yPercent: 120, stagger: 0.15, duration: 1.3 }, '-=0.5')
+        .from('.hero-desc', { y: 30, opacity: 0, duration: 1 }, '-=0.9')
+        .from('.hero-cta-group > *', { y: 20, opacity: 0, stagger: 0.1, duration: 0.8 }, '-=0.8')
+        .from('.hero-stats .stat-item', { y: 20, opacity: 0, stagger: 0.1, duration: 0.8 }, '-=0.7')
+        .from('.canvas-interaction-badge', { scale: 0.8, opacity: 0, duration: 0.8 }, '-=0.6');
+    }
+
+    /* HEADER SCROLL BEHAVIOR & SCROLL PROGRESS */
+    const header = document.getElementById('site-header');
+    const scrollProgress = document.getElementById('scroll-progress');
+
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      if (scrollY > 50) header.classList.add('scrolled');
+      else header.classList.remove('scrolled');
+
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = (scrollY / maxScroll) * 100;
+      scrollProgress.style.width = pct + '%';
+    }, { passive: true });
+
+    /* DYNAMIC SENSORY MARQUEE */
+    let marqueePos = 0;
+    const marqueeTrack = document.getElementById('marquee-track');
+    let marqueeBaseSpeed = 0.8;
+    let marqueeSpeed = marqueeBaseSpeed;
+
+    function renderMarquee() {
+      marqueePos -= marqueeSpeed;
+      if (marqueePos <= -marqueeTrack.scrollWidth / 2) {
+        marqueePos = 0;
+      }
+      marqueeTrack.style.transform = `translate3d(${marqueePos}px, 0, 0)`;
+      requestAnimationFrame(renderMarquee);
+    }
+    requestAnimationFrame(renderMarquee);
+
+    lenis.on('scroll', (e) => {
+      marqueeSpeed = marqueeBaseSpeed + Math.min(Math.abs(e.velocity) * 0.4, 6);
+      setTimeout(() => { marqueeSpeed = marqueeBaseSpeed; }, 200);
+    });
+
+    /* WORLD TIMEZONE CLOCKS */
+    function updateWorldClocks() {
+      const now = new Date();
+      const formatTime = (tz) => now.toLocaleTimeString('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit' });
+      document.getElementById('clock-london').textContent = formatTime('Europe/London');
+      document.getElementById('clock-ny').textContent = formatTime('America/New_York');
+      document.getElementById('clock-tokyo').textContent = formatTime('Asia/Tokyo');
+    }
+    updateWorldClocks();
+    setInterval(updateWorldClocks, 10000);
+
+    /* WEB AUDIO SYNTHESIZED SOUNDSCAPE */
+    let audioCtx = null;
+    let isSoundOn = false;
+    let ambientNoiseNode = null;
+    let ambientGainNode = null;
+
+    const soundToggle = document.getElementById('sound-toggle');
+    const soundText = soundToggle.querySelector('.sound-text');
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function createCafeAmbience() {
+      if (!audioCtx) initAudio();
+      
+      const bufferSize = audioCtx.sampleRate * 2;
+      const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.03;
+        b6 = white * 0.115926;
+      }
+
+      ambientNoiseNode = audioCtx.createBufferSource();
+      ambientNoiseNode.buffer = noiseBuffer;
+      ambientNoiseNode.loop = true;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(320, audioCtx.currentTime);
+
+      ambientGainNode = audioCtx.createGain();
+      ambientGainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+
+      ambientNoiseNode.connect(filter);
+      filter.connect(ambientGainNode);
+      ambientGainNode.connect(audioCtx.destination);
+      ambientNoiseNode.start();
+    }
+
+    function playToneChime(freq = 520, duration = 0.4, type = 'sine') {
+      if (!isSoundOn || !audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
+    }
+
+    soundToggle.addEventListener('click', () => {
+      initAudio();
+      isSoundOn = !isSoundOn;
+      if (isSoundOn) {
+        soundToggle.classList.add('playing');
+        soundText.textContent = 'Sound: Live';
+        createCafeAmbience();
+        playToneChime(640, 0.5);
+        showToast('Ambient Coffeehouse Soundscape Activated');
+      } else {
+        soundToggle.classList.remove('playing');
+        soundText.textContent = 'Sound: Off';
+        if (ambientNoiseNode) {
+          try { ambientNoiseNode.stop(); } catch(e){}
+        }
+      }
+    });
+
+    document.querySelectorAll('.btn-hero-primary, .btn-add-custom, .btn-reserve, .menu-filter-btn, .origin-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => playToneChime(880, 0.25));
+    });
+
+    /* THREE.JS 3D COFFEE CUP, SAUCER & FLOATING ROASTED BEANS */
+    const heroCanvas = document.getElementById('coffee-hero-canvas');
+    let heroScene, heroCamera, heroRenderer;
+    let coffeeCupGroup;
+    let beansGroup;
+    let steamParticles;
+
+    function createLatteArtTexture(pattern = 'rosetta') {
+      const size = 512;
+      const cvs = document.createElement('canvas');
+      cvs.width = size;
+      cvs.height = size;
+      const ctx = cvs.getContext('2d');
+
+      const grad = ctx.createRadialGradient(size/2, size/2, 20, size/2, size/2, size/2);
+      grad.addColorStop(0, '#5A341E');
+      grad.addColorStop(0.5, '#422413');
+      grad.addColorStop(0.85, '#6A3E20');
+      grad.addColorStop(1, '#2B1408');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, size, size);
+
+      ctx.fillStyle = 'rgba(230, 160, 80, 0.12)';
+      for (let i = 0; i < 150; i++) {
+        const bx = Math.random() * size;
+        const by = Math.random() * size;
+        const br = Math.random() * 3 + 1;
+        ctx.beginPath();
+        ctx.arc(bx, by, br, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.strokeStyle = '#FAF6EE';
+      ctx.fillStyle = '#FAF6EE';
+      ctx.lineWidth = 14;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      const cx = size / 2;
+      const cy = size / 2;
+
+      if (pattern === 'rosetta') {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + 160);
+        ctx.lineTo(cx, cy - 140);
+        ctx.stroke();
+
+        for (let j = 0; j < 6; j++) {
+          const ly = cy + 120 - j * 45;
+          const spread = (6 - j) * 16;
+          ctx.beginPath();
+          ctx.moveTo(cx, ly);
+          ctx.quadraticCurveTo(cx - spread * 1.5, ly - 20, cx, ly - 35);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(cx, ly);
+          ctx.quadraticCurveTo(cx + spread * 1.5, ly - 20, cx, ly - 35);
+          ctx.fill();
+        }
+        ctx.beginPath();
+        ctx.arc(cx - 15, cy - 150, 16, 0, Math.PI * 2);
+        ctx.arc(cx + 15, cy - 150, 16, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (pattern === 'heart') {
+        ctx.beginPath();
+        ctx.arc(cx - 36, cy - 30, 48, Math.PI, 0, false);
+        ctx.arc(cx + 36, cy - 30, 48, Math.PI, 0, false);
+        ctx.lineTo(cx, cy + 90);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = '#422413';
+        ctx.beginPath();
+        ctx.arc(cx - 18, cy - 15, 24, Math.PI, 0, false);
+        ctx.arc(cx + 18, cy - 15, 24, Math.PI, 0, false);
+        ctx.lineTo(cx, cy + 45);
+        ctx.closePath();
+        ctx.fill();
+      } else if (pattern === 'swan') {
+        ctx.beginPath();
+        ctx.moveTo(cx - 40, cy + 120);
+        ctx.bezierCurveTo(cx - 120, cy + 20, cx + 80, cy - 40, cx, cy - 130);
+        ctx.bezierCurveTo(cx - 30, cy - 160, cx + 50, cy - 170, cx + 25, cy - 110);
+        ctx.lineWidth = 22;
+        ctx.stroke();
+        ctx.lineWidth = 8;
+        for (let k = 0; k < 5; k++) {
+          ctx.beginPath();
+          ctx.moveTo(cx - 20, cy + 80 - k * 30);
+          ctx.quadraticCurveTo(cx + 70 + k * 10, cy + 50 - k * 30, cx, cy + 30 - k * 30);
+          ctx.stroke();
+        }
+      } else {
+        ctx.strokeStyle = 'rgba(247, 203, 136, 0.4)';
+        ctx.lineWidth = 18;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 120, 0.2, Math.PI * 1.6);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(cx, cy, 60, 2.5, Math.PI * 2.8);
+        ctx.stroke();
+      }
+
+      return new THREE.CanvasTexture(cvs);
+    }
+
+    function createProceduralCoffeeCup(ceramicHex = 0x181512, artStyle = 'rosetta') {
+      const group = new THREE.Group();
+
+      const ceramicMat = new THREE.MeshPhysicalMaterial({
+        color: ceramicHex,
+        roughness: 0.25,
+        metalness: 0.08,
+        clearcoat: 0.9,
+        clearcoatRoughness: 0.12,
+        reflectivity: 0.8,
+      });
+
+      const goldTrimMat = new THREE.MeshStandardMaterial({
+        color: 0xE5A04E,
+        metalness: 0.85,
+        roughness: 0.2,
+      });
+
+      const cupPoints = [];
+      cupPoints.push(new THREE.Vector2(0, 0));
+      cupPoints.push(new THREE.Vector2(1.2, 0));
+      cupPoints.push(new THREE.Vector2(1.28, 0.1));
+      cupPoints.push(new THREE.Vector2(1.7, 1.4));
+      cupPoints.push(new THREE.Vector2(1.95, 2.3));
+      cupPoints.push(new THREE.Vector2(2.0, 2.5));
+      cupPoints.push(new THREE.Vector2(1.92, 2.52));
+      cupPoints.push(new THREE.Vector2(1.82, 2.5));
+      cupPoints.push(new THREE.Vector2(1.78, 2.3));
+      cupPoints.push(new THREE.Vector2(1.55, 1.3));
+      cupPoints.push(new THREE.Vector2(1.05, 0.2));
+      cupPoints.push(new THREE.Vector2(0, 0.2));
+
+      const cupGeo = new THREE.LatheGeometry(cupPoints, 48);
+      const cupMesh = new THREE.Mesh(cupGeo, ceramicMat);
+      cupMesh.castShadow = true;
+      cupMesh.receiveShadow = true;
+      group.add(cupMesh);
+
+      const rimGeo = new THREE.TorusGeometry(1.91, 0.025, 16, 64);
+      rimGeo.rotateX(Math.PI / 2);
+      rimGeo.translate(0, 2.51, 0);
+      const rimMesh = new THREE.Mesh(rimGeo, goldTrimMat);
+      group.add(rimMesh);
+
+      const handleShape = new THREE.CurvePath();
+      const handleCurve = new THREE.CubicBezierCurve3(
+        new THREE.Vector3(1.6, 1.9, 0),
+        new THREE.Vector3(2.85, 2.1, 0),
+        new THREE.Vector3(2.85, 0.7, 0),
+        new THREE.Vector3(1.35, 0.8, 0)
+      );
+      handleShape.add(handleCurve);
+      const handleGeo = new THREE.TubeGeometry(handleCurve, 32, 0.16, 16, false);
+      const handleMesh = new THREE.Mesh(handleGeo, ceramicMat);
+      handleMesh.castShadow = true;
+      group.add(handleMesh);
+
+      const liquidTexture = createLatteArtTexture(artStyle);
+      const liquidMat = new THREE.MeshStandardMaterial({
+        map: liquidTexture,
+        roughness: 0.18,
+        metalness: 0.05,
+      });
+      const liquidGeo = new THREE.CircleGeometry(1.82, 48);
+      liquidGeo.rotateX(-Math.PI / 2);
+      const liquidMesh = new THREE.Mesh(liquidGeo, liquidMat);
+      liquidMesh.position.y = 2.22;
+      group.add(liquidMesh);
+
+      const saucerPoints = [];
+      saucerPoints.push(new THREE.Vector2(0, -0.05));
+      saucerPoints.push(new THREE.Vector2(1.8, -0.05));
+      saucerPoints.push(new THREE.Vector2(2.5, 0.1));
+      saucerPoints.push(new THREE.Vector2(3.1, 0.38));
+      saucerPoints.push(new THREE.Vector2(3.2, 0.42));
+      saucerPoints.push(new THREE.Vector2(3.15, 0.35));
+      saucerPoints.push(new THREE.Vector2(2.45, 0.04));
+      saucerPoints.push(new THREE.Vector2(1.6, -0.15));
+      saucerPoints.push(new THREE.Vector2(0, -0.15));
+
+      const saucerGeo = new THREE.LatheGeometry(saucerPoints, 56);
+      const saucerMesh = new THREE.Mesh(saucerGeo, ceramicMat);
+      saucerMesh.position.y = -0.08;
+      saucerMesh.castShadow = true;
+      saucerMesh.receiveShadow = true;
+      group.add(saucerMesh);
+
+      return group;
+    }
+
+    function createSingleCoffeeBean() {
+      const beanGroup = new THREE.Group();
+      const beanMat = new THREE.MeshStandardMaterial({
+        color: 0x3E2314,
+        roughness: 0.4,
+        metalness: 0.1,
+      });
+
+      const sphereGeo = new THREE.SphereGeometry(0.24, 24, 16);
+      sphereGeo.scale(1.4, 0.9, 0.7);
+
+      const beanMesh = new THREE.Mesh(sphereGeo, beanMat);
+      beanGroup.add(beanMesh);
+
+      const creaseMat = new THREE.MeshBasicMaterial({ color: 0x1A0D07 });
+      const creaseGeo = new THREE.BoxGeometry(0.48, 0.03, 0.05);
+      const crease = new THREE.Mesh(creaseGeo, creaseMat);
+      crease.position.z = 0.14;
+      crease.rotation.z = 0.08;
+      beanGroup.add(crease);
+
+      return beanGroup;
+    }
+
+    function initHeroThreeScene() {
+      heroScene = new THREE.Scene();
+      
+      const width = heroCanvas.parentElement.clientWidth;
+      const height = heroCanvas.parentElement.clientHeight;
+
+      heroCamera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
+      heroCamera.position.set(3.2, 3.8, 6.8);
+      heroCamera.lookAt(0.5, 1.2, 0);
+
+      heroRenderer = new THREE.WebGLRenderer({
+        canvas: heroCanvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: 'high-performance'
+      });
+      heroRenderer.setSize(width, height);
+      heroRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      heroRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+      heroRenderer.toneMappingExposure = 1.25;
+      heroRenderer.shadowMap.enabled = true;
+      heroRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      const ambientLight = new THREE.AmbientLight(0xFDF8EE, 0.9);
+      heroScene.add(ambientLight);
+
+      const keyLight = new THREE.DirectionalLight(0xF7CB88, 2.2);
+      keyLight.position.set(5, 8, 5);
+      keyLight.castShadow = true;
+      keyLight.shadow.mapSize.width = 1024;
+      keyLight.shadow.mapSize.height = 1024;
+      heroScene.add(keyLight);
+
+      const fillLight = new THREE.DirectionalLight(0xD85D38, 1.2);
+      fillLight.position.set(-6, 3, -3);
+      heroScene.add(fillLight);
+
+      const rimLight = new THREE.PointLight(0xE5A04E, 2.0, 10);
+      rimLight.position.set(0, 4, -4);
+      heroScene.add(rimLight);
+
+      coffeeCupGroup = createProceduralCoffeeCup(0x181512, 'rosetta');
+      coffeeCupGroup.position.set(1.4, -0.4, 0);
+      coffeeCupGroup.rotation.y = -0.55;
+      heroScene.add(coffeeCupGroup);
+
+      beansGroup = new THREE.Group();
+      const beanCount = 18;
+      for (let i = 0; i < beanCount; i++) {
+        const bean = createSingleCoffeeBean();
+        const angle = (i / beanCount) * Math.PI * 2 + Math.random() * 0.4;
+        const radius = 2.4 + Math.random() * 2.2;
+        const heightOffset = (Math.random() - 0.5) * 3.2 + 0.8;
+
+        bean.position.set(
+          Math.cos(angle) * radius + 1.4,
+          heightOffset,
+          Math.sin(angle) * radius
+        );
+        bean.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+        bean.userData = {
+          speedX: (Math.random() - 0.5) * 0.02,
+          speedY: (Math.random() - 0.5) * 0.025,
+          speedZ: (Math.random() - 0.5) * 0.02,
+          orbitRadius: radius,
+          orbitAngle: angle,
+          orbitSpeed: 0.003 + Math.random() * 0.004,
+          baseY: heightOffset,
+          bobPhase: Math.random() * Math.PI * 2
+        };
+        beansGroup.add(bean);
+      }
+      heroScene.add(beansGroup);
+
+      const particleCount = 45;
+      const steamGeo = new THREE.BufferGeometry();
+      const positions = new Float32Array(particleCount * 3);
+      const velocities = [];
+
+      for (let p = 0; p < particleCount; p++) {
+        positions[p * 3] = 1.4 + (Math.random() - 0.5) * 0.8;
+        positions[p * 3 + 1] = 1.8 + Math.random() * 2.2;
+        positions[p * 3 + 2] = (Math.random() - 0.5) * 0.8;
+
+        velocities.push({
+          x: (Math.random() - 0.5) * 0.008,
+          y: 0.012 + Math.random() * 0.015,
+          z: (Math.random() - 0.5) * 0.008,
+          life: Math.random()
+        });
+      }
+
+      steamGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const steamMat = new THREE.PointsMaterial({
+        color: 0xFAF6EE,
+        size: 0.35,
+        transparent: true,
+        opacity: 0.22,
+        blending: THREE.AdditiveBlending,
+      });
+
+      steamParticles = new THREE.Points(steamGeo, steamMat);
+      steamParticles.userData = { velocities };
+      heroScene.add(steamParticles);
+
+      window.addEventListener('resize', onHeroResize);
+      setupHeroCanvasDrag();
+      setup3DScrollTrigger();
+      renderHeroScene();
+    }
+
+    function onHeroResize() {
+      if (!heroCanvas || !heroRenderer || !heroCamera) return;
+      const width = heroCanvas.parentElement.clientWidth;
+      const height = heroCanvas.parentElement.clientHeight;
+      heroCamera.aspect = width / height;
+      heroCamera.updateProjectionMatrix();
+      heroRenderer.setSize(width, height);
+    }
+
+    let isDraggingHero = false;
+    let prevHeroMouse = { x: 0, y: 0 };
+    let targetCupRotY = -0.55;
+    let targetCupRotX = 0;
+
+    function setupHeroCanvasDrag() {
+      heroCanvas.addEventListener('mousedown', (e) => {
+        isDraggingHero = true;
+        prevHeroMouse = { x: e.clientX, y: e.clientY };
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (!isDraggingHero) return;
+        const deltaX = e.clientX - prevHeroMouse.x;
+        const deltaY = e.clientY - prevHeroMouse.y;
+        targetCupRotY += deltaX * 0.008;
+        targetCupRotX += deltaY * 0.005;
+        prevHeroMouse = { x: e.clientX, y: e.clientY };
+      });
+      window.addEventListener('mouseup', () => { isDraggingHero = false; });
+
+      heroCanvas.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          isDraggingHero = true;
+          prevHeroMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+      }, { passive: true });
+      window.addEventListener('touchmove', (e) => {
+        if (!isDraggingHero || e.touches.length !== 1) return;
+        const deltaX = e.touches[0].clientX - prevHeroMouse.x;
+        const deltaY = e.touches[0].clientY - prevHeroMouse.y;
+        targetCupRotY += deltaX * 0.008;
+        targetCupRotX += deltaY * 0.005;
+        prevHeroMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }, { passive: true });
+      window.addEventListener('touchend', () => { isDraggingHero = false; });
+    }
+
+    function setup3DScrollTrigger() {
+      ScrollTrigger.create({
+        trigger: '#hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1.2,
+        onUpdate: (self) => {
+          const p = self.progress;
+          coffeeCupGroup.position.y = -0.4 - p * 1.5;
+          coffeeCupGroup.position.x = 1.4 - p * 1.8;
+          coffeeCupGroup.rotation.x = p * 0.4;
+          coffeeCupGroup.scale.setScalar(1 - p * 0.25);
+        }
+      });
+    }
+
+    let clock = new THREE.Clock();
+
+    function renderHeroScene() {
+      requestAnimationFrame(renderHeroScene);
+      const delta = clock.getDelta();
+      const elapsedTime = clock.getElapsedTime();
+
+      if (coffeeCupGroup) {
+        coffeeCupGroup.rotation.y += (targetCupRotY - coffeeCupGroup.rotation.y) * 0.08;
+        coffeeCupGroup.rotation.x += (targetCupRotX - coffeeCupGroup.rotation.x) * 0.08;
+
+        if (!isDraggingHero) {
+          targetCupRotY += 0.002;
+          coffeeCupGroup.position.y += Math.sin(elapsedTime * 1.4) * 0.001;
+        }
+      }
+
+      if (beansGroup) {
+        beansGroup.children.forEach(bean => {
+          const d = bean.userData;
+          d.orbitAngle += d.orbitSpeed;
+          bean.position.x = Math.cos(d.orbitAngle) * d.orbitRadius + 1.4;
+          bean.position.z = Math.sin(d.orbitAngle) * d.orbitRadius;
+          bean.position.y = d.baseY + Math.sin(elapsedTime * 2 + d.bobPhase) * 0.25;
+
+          bean.rotation.x += d.speedX;
+          bean.rotation.y += d.speedY;
+          bean.rotation.z += d.speedZ;
+        });
+      }
+
+      if (steamParticles) {
+        const pos = steamParticles.geometry.attributes.position.array;
+        const vels = steamParticles.userData.velocities;
+        for (let i = 0; i < vels.length; i++) {
+          pos[i * 3] += vels[i].x;
+          pos[i * 3 + 1] += vels[i].y;
+          pos[i * 3 + 2] += vels[i].z;
+
+          if (pos[i * 3 + 1] > 4.2) {
+            pos[i * 3] = 1.4 + (Math.random() - 0.5) * 0.7;
+            pos[i * 3 + 1] = 1.8;
+            pos[i * 3 + 2] = (Math.random() - 0.5) * 0.7;
+          }
+        }
+        steamParticles.geometry.attributes.position.needsUpdate = true;
+      }
+
+      heroRenderer.render(heroScene, heroCamera);
+    }
+
+    initHeroThreeScene();
+
+    /* 3D CUP STUDIO CUSTOMIZER */
+    const customCanvas = document.getElementById('customizer-3d-canvas');
+    let customScene, customCamera, customRenderer;
+    let customCupGroup;
+    let currentGlazeHex = 0x181512;
+    let currentArtStyle = 'rosetta';
+
+    function initCustomizerScene() {
+      customScene = new THREE.Scene();
+      const rect = customCanvas.getBoundingClientRect();
+      const width = rect.width || 480;
+      const height = rect.height || 480;
+
+      customCamera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+      customCamera.position.set(0, 3.4, 5.8);
+      customCamera.lookAt(0, 0.9, 0);
+
+      customRenderer = new THREE.WebGLRenderer({
+        canvas: customCanvas,
+        alpha: true,
+        antialias: true
+      });
+      customRenderer.setSize(width, height);
+      customRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      customRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+      customRenderer.toneMappingExposure = 1.3;
+
+      const amb = new THREE.AmbientLight(0xFFF7EC, 1.2);
+      customScene.add(amb);
+
+      const d1 = new THREE.DirectionalLight(0xF7CB88, 2.4);
+      d1.position.set(4, 7, 5);
+      customScene.add(d1);
+
+      const d2 = new THREE.DirectionalLight(0xD85D38, 1.4);
+      d2.position.set(-5, 2, -4);
+      customScene.add(d2);
+
+      updateCustomizerCup();
+      setupCustomizerDrag();
+      renderCustomizerScene();
+
+      window.addEventListener('resize', () => {
+        if (!customCanvas || !customRenderer || !customCamera) return;
+        const w = customCanvas.parentElement.clientWidth;
+        const h = customCanvas.parentElement.clientHeight;
+        customCamera.aspect = w / h;
+        customCamera.updateProjectionMatrix();
+        customRenderer.setSize(w, h);
+      });
+    }
+
+    function updateCustomizerCup() {
+      if (customCupGroup) customScene.remove(customCupGroup);
+      customCupGroup = createProceduralCoffeeCup(currentGlazeHex, currentArtStyle);
+      customCupGroup.position.set(0, -0.4, 0);
+      customCupGroup.rotation.y = -0.3;
+      customScene.add(customCupGroup);
+    }
+
+    let isDraggingCustom = false;
+    let prevCustomMouse = { x: 0, y: 0 };
+    let customCupRotY = -0.3;
+    let customCupRotX = 0;
+
+    function setupCustomizerDrag() {
+      customCanvas.addEventListener('mousedown', (e) => {
+        isDraggingCustom = true;
+        prevCustomMouse = { x: e.clientX, y: e.clientY };
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (!isDraggingCustom) return;
+        const dx = e.clientX - prevCustomMouse.x;
+        const dy = e.clientY - prevCustomMouse.y;
+        customCupRotY += dx * 0.01;
+        customCupRotX += dy * 0.008;
+        prevCustomMouse = { x: e.clientX, y: e.clientY };
+      });
+      window.addEventListener('mouseup', () => { isDraggingCustom = false; });
+    }
+
+    function renderCustomizerScene() {
+      requestAnimationFrame(renderCustomizerScene);
+      if (customCupGroup) {
+        customCupGroup.rotation.y += (customCupRotY - customCupGroup.rotation.y) * 0.1;
+        customCupGroup.rotation.x += (customCupRotX - customCupGroup.rotation.x) * 0.1;
+        if (!isDraggingCustom) {
+          customCupRotY += 0.003;
+        }
+      }
+      customRenderer.render(customScene, customCamera);
+    }
+
+    initCustomizerScene();
+
+    /* CUSTOMIZER UI CONTROLS */
+    const glazeMap = {
+      obsidian: { hex: 0x181512, name: 'Obsidian Noir Matte' },
+      linen: { hex: 0xF2EBE0, name: 'Linen Oat Glaze' },
+      terracotta: { hex: 0xD85D38, name: 'Ember Terracotta' },
+      sage: { hex: 0x3C4F41, name: 'Botanical Forest Sage' }
+    };
+
+    let selectedGlaze = 'obsidian';
+    let selectedArt = 'rosetta';
+    let selectedBrew = 'espresso';
+    let selectedAccent = 'none';
+    let baseCustomPrice = 4.75;
+
+    document.querySelectorAll('.color-swatch').forEach(swatch => {
+      swatch.addEventListener('click', () => {
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+        swatch.classList.add('active');
+        selectedGlaze = swatch.dataset.glaze;
+        document.getElementById('glaze-name-display').textContent = glazeMap[selectedGlaze].name;
+        currentGlazeHex = glazeMap[selectedGlaze].hex;
+        updateCustomizerCup();
+      });
+    });
+
+    document.querySelectorAll('[data-art]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-art]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedArt = btn.dataset.art;
+        document.getElementById('art-name-display').textContent = btn.textContent.replace('✦ ', '');
+        currentArtStyle = selectedArt;
+        updateCustomizerCup();
+      });
+    });
+
+    document.querySelectorAll('[data-brew]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-brew]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedBrew = btn.dataset.brew;
+        baseCustomPrice = parseFloat(btn.dataset.price);
+        document.getElementById('brew-name-display').textContent = btn.textContent.split(' (')[0];
+        document.getElementById('custom-price-display').textContent = '$' + baseCustomPrice.toFixed(2);
+      });
+    });
+
+    document.querySelectorAll('[data-accent]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-accent]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedAccent = btn.dataset.accent;
+        document.getElementById('infusion-name-display').textContent = btn.textContent;
+      });
+    });
+
+    document.getElementById('btn-add-custom-cup').addEventListener('click', () => {
+      const customItem = {
+        name: `Bespoke ${document.getElementById('brew-name-display').textContent}`,
+        variant: `${glazeMap[selectedGlaze].name} · ${document.getElementById('art-name-display').textContent}`,
+        price: baseCustomPrice,
+        img: 'https://images.pexels.com/photos/30630942/pexels-photo-30630942.jpeg?auto=compress&cs=tinysrgb&w=400'
+      };
+      addToCart(customItem);
+      showToast(`Added ${customItem.name} to your Coffee Bag!`);
+      openCartDrawer();
+    });
+
+    /* ORIGIN ATLAS DATA & RENDER */
+    const originsData = {
+      ethiopia: {
+        country: 'Ethiopia · Gedeo Zone',
+        name: 'Yirgacheffe Banko Gotiti',
+        score: '92.2 SCA Score',
+        desc: 'Hand-picked Heirloom varietals grown at 2,150m under native acacia shade. Processed with 72-hour anaerobic fermentation producing radiant floral perfume and sparkling citrus clarity.',
+        altitude: '2,150 MASL',
+        varietal: 'Heirloom Typica',
+        process: 'Anaerobic Washed',
+        notes: ['Jasmine Blossom', 'Candied Bergamot', 'White Peach', 'Earl Grey Tea'],
+        img: 'https://images.pexels.com/photos/28647687/pexels-photo-28647687.jpeg?auto=compress&cs=tinysrgb&w=900'
+      },
+      colombia: {
+        country: 'Colombia · Huila Valley',
+        name: 'Finca El Paraíso Geisha',
+        score: '93.5 SCA Score',
+        desc: 'Award-winning Geisha lot cultivated on volcanic slopes. Thermal shock washing locks in tropical stone fruit brightness, delicate lemongrass aromatics, and velvety honey mouthfeel.',
+        altitude: '1,950 MASL',
+        varietal: 'Pink Bourbon Geisha',
+        process: 'Thermal Shock Double Ferment',
+        notes: ['Passionfruit', 'Wild Honeycomb', 'Lemongrass', 'Cardamom'],
+        img: 'https://images.pexels.com/photos/30357453/pexels-photo-30357453.jpeg?auto=compress&cs=tinysrgb&w=900'
+      },
+      guatemala: {
+        country: 'Guatemala · Sacatepéquez',
+        name: 'Antigua Los Volcanes',
+        score: '89.8 SCA Score',
+        desc: 'Nourished by the rich mineral soil of three surrounding volcanoes. Slow sun-dried on clay patios yielding deep dark chocolate decadence, orange zest, and toasted hazelnut undertones.',
+        altitude: '1,800 MASL',
+        varietal: 'Caturra & Bourbon',
+        process: 'Fully Washed Sun-Dried',
+        notes: ['Dark Chocolate Ganache', 'Blood Orange', 'Toasted Almond', 'Brown Sugar'],
+        img: 'https://images.pexels.com/photos/669162/pexels-photo-669162.jpeg?auto=compress&cs=tinysrgb&w=900'
+      },
+      sumatra: {
+        country: 'Indonesia · Aceh Province',
+        name: 'Gayo Mountain Anaerobic',
+        score: '90.5 SCA Score',
+        desc: 'Micro-lot grown in the lush tropical rainforest canopy near Lake Laut Tawar. Wet-hulled with modern temperature-controlled anaerobic resting for rich cedar, spiced molasses, and heavy body.',
+        altitude: '1,650 MASL',
+        varietal: 'Ateng & Tim Tim',
+        process: 'Anaerobic Giling Basah',
+        notes: ['Spiced Molasses', 'Cedar Wood', 'Black Fig', 'Dark Truffle'],
+        img: 'https://images.pexels.com/photos/13623762/pexels-photo-13623762.jpeg?auto=compress&cs=tinysrgb&w=900'
+      }
+    };
+
+    function renderOrigin(key) {
+      const o = originsData[key];
+      const html = `
+        <div class="origin-media">
+          <img src="${o.img}" alt="${o.name}" loading="lazy">
+          <div class="origin-score-badge"><span>✦ ${o.score}</span></div>
+        </div>
+        <div class="origin-details">
+          <div>
+            <span class="origin-country">${o.country}</span>
+            <h3 class="origin-name">${o.name}</h3>
+            <p class="origin-desc">${o.desc}</p>
+            
+            <div class="origin-specs-grid">
+              <div class="spec-box">
+                <span>Elevation</span>
+                <strong>${o.altitude}</strong>
+              </div>
+              <div class="spec-box">
+                <span>Varietal</span>
+                <strong>${o.varietal}</strong>
+              </div>
+              <div class="spec-box">
+                <span>Processing</span>
+                <strong>${o.process}</strong>
+              </div>
+            </div>
+
+            <div class="flavor-chips-wrap">
+              <span class="flavor-chips-label">Sensory Tasting Notes</span>
+              <div class="flavor-chips">
+                ${o.notes.map(n => `<span class="flavor-chip">✦ ${n}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-top:20px;">
+            <button class="btn-hero-primary" onclick="addOriginToCart('${o.name}', '${o.img}')">
+              <span>Order 250g Whole Bean Bag ($21.00)</span>
+            </button>
+          </div>
+        </div>
+      `;
+      const card = document.getElementById('origin-card-content');
+      card.innerHTML = html;
+      gsap.fromTo(card.children, { opacity: 0, y: 20 }, { opacity: 1, y: 0, stagger: 0.1, duration: 0.6, ease: 'power3.out' });
+    }
+
+    window.addOriginToCart = function(name, img) {
+      addToCart({
+        name: `${name} (250g Bag)`,
+        variant: 'Whole Bean · Roasted To Order',
+        price: 21.00,
+        img: img
+      });
+      showToast(`Added ${name} retail bag to your Coffee Bag!`);
+      openCartDrawer();
+    };
+
+    renderOrigin('ethiopia');
+
+    document.querySelectorAll('.origin-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.origin-tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderOrigin(btn.dataset.origin);
+      });
+    });
+
+    /* CURATED MENU PRODUCTS DATA & FILTERING */
+    const productsData = [
+      {
+        id: 1,
+        name: 'Classic Double Ristretto',
+        cat: 'espresso',
+        categoryName: 'Espresso Bar',
+        price: 4.25,
+        desc: 'Short extracted double shot pulled at 9 bars pressure. Viscous dark cocoa, brown sugar, and dense golden crema.',
+        tags: ['Single Origin', '18g In / 36g Out', '94°C'],
+        img: 'https://images.pexels.com/photos/544113/pexels-photo-544113.jpeg?auto=compress&cs=tinysrgb&w=700'
+      },
+      {
+        id: 2,
+        name: 'Velvet Oat Flat White',
+        cat: 'espresso',
+        categoryName: 'Espresso Bar',
+        price: 5.25,
+        desc: 'Double ristretto married with micro-foamed oat milk at 62°C. Sweet caramelized malt with silky mouthfeel.',
+        tags: ['Minor Figures Oat', 'Latte Art', 'Low Acidity'],
+        img: 'https://images.pexels.com/photos/14918462/pexels-photo-14918462.jpeg?auto=compress&cs=tinysrgb&w=700'
+      },
+      {
+        id: 3,
+        name: 'Heirloom V60 Single Origin',
+        cat: 'pourover',
+        categoryName: 'Slow Pour-Over',
+        price: 5.75,
+        desc: 'Hand-poured to order using Japanese Hario V60 paper drippers. Radiant jasmine, candied lemon, and sweet tea finish.',
+        tags: ['Ethiopia Yirgacheffe', '1:16 Ratio', 'SCA 92.2'],
+        img: 'https://images.pexels.com/photos/28647687/pexels-photo-28647687.jpeg?auto=compress&cs=tinysrgb&w=700'
+      },
+      {
+        id: 4,
+        name: 'Chemex Huila Geisha Reserve',
+        cat: 'pourover',
+        categoryName: 'Slow Pour-Over',
+        price: 6.50,
+        desc: 'Heavy bonded filter extraction delivering pristine cup clarity, tropical passionfruit acidity, and wildflower honey.',
+        tags: ['Colombia Geisha', 'Bonded Filter', 'Limited Lot'],
+        img: 'https://images.pexels.com/photos/30357453/pexels-photo-30357453.jpeg?auto=compress&cs=tinysrgb&w=700'
+      },
+      {
+        id: 5,
+        name: 'Kyoto 16-Hour Nitro Cold Drip',
+        cat: 'cold',
+        categoryName: 'Cold & Nitro',
+        price: 5.75,
+        desc: 'Ice-water dripped drop by drop over 16 hours through spiral glass towers. Infused with pure nitrogen for a stout-like head.',
+        tags: ['Nitrogen Charged', 'Zero Sugar', 'Ultra Smooth'],
+        img: 'https://images.pexels.com/photos/12703064/pexels-photo-12703064.jpeg?auto=compress&cs=tinysrgb&w=700'
+      },
+      {
+        id: 6,
+        name: 'Bourbon Vanilla Bean Cold Latte',
+        cat: 'cold',
+        categoryName: 'Cold & Nitro',
+        price: 6.00,
+        desc: 'House cold brew shaken over clear carved ice with Madagascan bourbon vanilla bean and creamy grass-fed milk.',
+        tags: ['Real Vanilla', 'Hand Carved Ice', 'Refreshing'],
+        img: 'https://images.pexels.com/photos/30630942/pexels-photo-30630942.jpeg?auto=compress&cs=tinysrgb&w=700'
+      },
+      {
+        id: 7,
+        name: 'Artisan Cardamom Cruffin',
+        cat: 'bakery',
+        categoryName: 'Artisanal Bakery',
+        price: 4.50,
+        desc: 'Croissant dough baked in muffin molds, laminated with French butter and dusted in organic green cardamom sugar.',
+        tags: ['Baked at Dawn', 'French Normandy Butter', 'Crisp Layers'],
+        img: 'https://images.pexels.com/photos/19296861/pexels-photo-19296861.jpeg?auto=compress&cs=tinysrgb&w=700'
+      },
+      {
+        id: 8,
+        name: 'Toasted Almond Croissant',
+        cat: 'bakery',
+        categoryName: 'Artisanal Bakery',
+        price: 4.75,
+        desc: 'Twice-baked butter croissant filled with rich almond frangipane cream and topped with sliced toasted almonds.',
+        tags: ['Frangipane Filled', 'Classic French', 'Flaky Crust'],
+        img: 'https://images.pexels.com/photos/2135/pexels-photo-2135.jpeg?auto=compress&cs=tinysrgb&w=700'
+      },
+      {
+        id: 9,
+        name: 'Banko Gotiti Whole Beans (250g)',
+        cat: 'beans',
+        categoryName: 'Retail Beans',
+        price: 21.00,
+        desc: 'Degassed in nitrogen-flushed recyclable valve bags. Roasted weekly in small 12kg cast iron batches.',
+        tags: ['Whole Bean', 'Roast Date Stamped', '100% Arabica'],
+        img: 'https://images.pexels.com/photos/669162/pexels-photo-669162.jpeg?auto=compress&cs=tinysrgb&w=700'
+      }
+    ];
+
+    function renderProducts(filter = 'all') {
+      const grid = document.getElementById('products-grid');
+      const filtered = filter === 'all' ? productsData : productsData.filter(p => p.cat === filter);
+
+      grid.innerHTML = filtered.map(p => `
+        <div class="product-card" data-cat="${p.cat}">
+          <div class="product-media">
+            <img src="${p.img}" alt="${p.name}" loading="lazy">
+            <span class="product-category-tag">${p.categoryName}</span>
+            <button class="product-quickview-btn" onclick="quickViewProduct(${p.id})" title="Quick Inspect">
+              <i data-lucide="eye" style="width:16px; height:16px;"></i>
+            </button>
+          </div>
+          <div class="product-body">
+            <div>
+              <div class="product-header">
+                <h4 class="product-name">${p.name}</h4>
+                <span class="product-price">$${p.price.toFixed(2)}</span>
+              </div>
+              <p class="product-desc">${p.desc}</p>
+              <div class="product-tags">
+                ${p.tags.map(t => `<span class="product-tag">${t}</span>`).join('')}
+              </div>
+            </div>
+            <div class="product-actions">
+              <button class="btn-add-cart" onclick="addProductToCartById(${p.id})">
+                <i data-lucide="plus" style="width:14px; height:14px;"></i>
+                <span>Add To Order</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+      setupCursorHover();
+
+      gsap.fromTo('.product-card', 
+        { opacity: 0, y: 30 }, 
+        { opacity: 1, y: 0, stagger: 0.08, duration: 0.7, ease: 'power3.out' }
+      );
+    }
+
+    renderProducts('all');
+
+    document.querySelectorAll('.menu-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.menu-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderProducts(btn.dataset.filter);
+      });
+    });
+
+    window.addProductToCartById = function(id) {
+      const product = productsData.find(p => p.id === id);
+      if (product) {
+        addToCart({
+          name: product.name,
+          variant: product.categoryName,
+          price: product.price,
+          img: product.img
+        });
+        showToast(`Added ${product.name} to Coffee Bag!`);
+        openCartDrawer();
+      }
+    };
+
+    window.quickViewProduct = function(id) {
+      const product = productsData.find(p => p.id === id);
+      if (product) {
+        showToast(`Inspecting: ${product.name}`);
+      }
+    };
+
+    /* V60 MASTERCLASS INTERACTIVE BREWING TIMER */
+    const stepCards = document.querySelectorAll('.brew-step-card');
+    const timerProgressRing = document.getElementById('timer-progress-ring');
+    const timerReadout = document.getElementById('timer-readout-text');
+    const timerStatusTitle = document.getElementById('timer-status-title');
+    const timerStepInstruction = document.getElementById('timer-step-instruction');
+    const btnTimerPlay = document.getElementById('btn-timer-play');
+    const btnTimerText = document.getElementById('btn-timer-text');
+    const btnTimerReset = document.getElementById('btn-timer-reset');
+
+    const circumference = 2 * Math.PI * 95;
+    timerProgressRing.style.strokeDasharray = circumference;
+    timerProgressRing.style.strokeDashoffset = circumference;
+
+    let currentStepIdx = 0;
+    let stepSeconds = 45;
+    let timerTimeRemaining = 45;
+    let timerInterval = null;
+    let isTimerRunning = false;
+
+    function selectBrewStep(idx) {
+      currentStepIdx = idx;
+      stepCards.forEach((c, i) => c.classList.toggle('active', i === idx));
+      const activeCard = stepCards[idx];
+      stepSeconds = parseInt(activeCard.dataset.duration);
+      timerTimeRemaining = stepSeconds;
+      timerStatusTitle.textContent = activeCard.dataset.title;
+      timerStepInstruction.textContent = activeCard.dataset.desc;
+      updateTimerDisplay();
+      setRingProgress(0);
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(timerTimeRemaining / 60);
+      const secs = timerTimeRemaining % 60;
+      timerReadout.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function setRingProgress(percent) {
+      const offset = circumference - (percent / 100) * circumference;
+      timerProgressRing.style.strokeDashoffset = offset;
+    }
+
+    function toggleTimer() {
+      if (isTimerRunning) {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        btnTimerText.textContent = 'Resume Timer';
+      } else {
+        isTimerRunning = true;
+        btnTimerText.textContent = 'Pause Timer';
+        playToneChime(780, 0.4);
+
+        timerInterval = setInterval(() => {
+          timerTimeRemaining--;
+          updateTimerDisplay();
+          const progress = ((stepSeconds - timerTimeRemaining) / stepSeconds) * 100;
+          setRingProgress(progress);
+
+          if (timerTimeRemaining <= 0) {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            playToneChime(1040, 0.8);
+            if (currentStepIdx < stepCards.length - 1) {
+              selectBrewStep(currentStepIdx + 1);
+              toggleTimer();
+            } else {
+              btnTimerText.textContent = 'Brew Completed!';
+              showToast('V60 Extraction Complete! Enjoy your pour.');
+              confetti({ particleCount: 60, spread: 50, origin: { y: 0.7 } });
+            }
+          }
+        }, 1000);
+      }
+    }
+
+    btnTimerPlay.addEventListener('click', toggleTimer);
+    btnTimerReset.addEventListener('click', () => {
+      clearInterval(timerInterval);
+      isTimerRunning = false;
+      btnTimerText.textContent = 'Start Brew Timer';
+      selectBrewStep(currentStepIdx);
+    });
+
+    stepCards.forEach((card, idx) => {
+      card.addEventListener('click', () => {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        btnTimerText.textContent = 'Start Brew Timer';
+        selectBrewStep(idx);
+      });
+    });
+
+    /* CART SYSTEM & SLIDE DRAWER */
+    let cart = [
+      {
+        id: 'initial-1',
+        name: 'Heirloom V60 Single Origin',
+        variant: 'Ethiopia Yirgacheffe · Light Roast',
+        price: 5.75,
+        qty: 1,
+        img: 'https://images.pexels.com/photos/28647687/pexels-photo-28647687.jpeg?auto=compress&cs=tinysrgb&w=400'
+      }
+    ];
+
+    const cartDrawer = document.getElementById('cart-drawer');
+    const cartBackdrop = document.getElementById('cart-drawer-backdrop');
+    const cartOpenBtn = document.getElementById('cart-open-btn');
+    const cartCloseBtn = document.getElementById('cart-close-btn');
+    const cartBadgeCount = document.getElementById('cart-badge-count');
+    const cartItemsContainer = document.getElementById('cart-items-container');
+    const cartSubtotal = document.getElementById('cart-subtotal');
+    const cartTax = document.getElementById('cart-tax');
+    const cartTotal = document.getElementById('cart-total');
+    const shippingProgressFill = document.getElementById('shipping-progress-fill');
+    const shippingProgressText = document.getElementById('shipping-progress-text');
+
+    function openCartDrawer() {
+      cartDrawer.classList.add('open');
+      cartBackdrop.classList.add('open');
+    }
+
+    function closeCartDrawer() {
+      cartDrawer.classList.remove('open');
+      cartBackdrop.classList.remove('open');
+    }
+
+    cartOpenBtn.addEventListener('click', openCartDrawer);
+    cartCloseBtn.addEventListener('click', closeCartDrawer);
+    cartBackdrop.addEventListener('click', closeCartDrawer);
+
+    function addToCart(item) {
+      const existing = cart.find(i => i.name === item.name && i.variant === item.variant);
+      if (existing) {
+        existing.qty++;
+      } else {
+        cart.push({ ...item, id: 'item-' + Date.now(), qty: 1 });
+      }
+      updateCartUI();
+    }
+
+    window.updateCartQty = function(id, change) {
+      const idx = cart.findIndex(i => i.id === id);
+      if (idx > -1) {
+        cart[idx].qty += change;
+        if (cart[idx].qty <= 0) {
+          cart.splice(idx, 1);
+        }
+      }
+      updateCartUI();
+    };
+
+    function updateCartUI() {
+      const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+      cartBadgeCount.textContent = totalCount;
+      cartBadgeCount.style.transform = 'scale(1.3)';
+      setTimeout(() => { cartBadgeCount.style.transform = 'scale(1)'; }, 200);
+
+      if (cart.length === 0) {
+        cartItemsContainer.innerHTML = `
+          <div class="cart-empty-state">
+            <p style="font-size:16px; margin-bottom:8px;">Your coffee bag is currently empty.</p>
+            <span style="font-size:12px; color:var(--cream-muted); display:block;">Select a signature roast or craft your bespoke 3D cup!</span>
+          </div>
+        `;
+      } else {
+        cartItemsContainer.innerHTML = cart.map(item => `
+          <div class="cart-item-row">
+            <div class="cart-item-img">
+              <img src="${item.img}" alt="${item.name}">
+            </div>
+            <div class="cart-item-info">
+              <div class="cart-item-title">${item.name}</div>
+              <div class="cart-item-variant">${item.variant}</div>
+              <div class="cart-item-bottom">
+                <span class="cart-item-price">$${(item.price * item.qty).toFixed(2)}</span>
+                <div class="cart-qty-ctrl">
+                  <button onclick="updateCartQty('${item.id}', -1)">-</button>
+                  <span>${item.qty}</span>
+                  <button onclick="updateCartQty('${item.id}', 1)">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      lucide.createIcons();
+
+      const sub = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+      const tax = sub * 0.08;
+      const tot = sub + tax;
+
+      cartSubtotal.textContent = '$' + sub.toFixed(2);
+      cartTax.textContent = '$' + tax.toFixed(2);
+      cartTotal.textContent = '$' + tot.toFixed(2);
+
+      const targetFree = 25.0;
+      if (sub >= targetFree) {
+        shippingProgressFill.style.width = '100%';
+        shippingProgressText.textContent = '🎉 You unlocked complimentary artisan pastry delivery!';
+      } else {
+        const remaining = targetFree - sub;
+        const pct = Math.min((sub / targetFree) * 100, 100);
+        shippingProgressFill.style.width = pct + '%';
+        shippingProgressText.textContent = `Add $${remaining.toFixed(2)} more for complimentary pastry delivery!`;
+      }
+    }
+
+    updateCartUI();
+
+    document.getElementById('btn-checkout-modal').addEventListener('click', () => {
+      if (cart.length === 0) {
+        showToast('Please add items to your coffee bag first.');
+        return;
+      }
+      closeCartDrawer();
+      showToast('Order confirmed! Our roastery baristas are dialing your pour.');
+      confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+    });
+
+    /* TABLE RESERVATION MODAL & HANDLERS */
+    const reserveModal = document.getElementById('reserve-modal-backdrop');
+    const modalReserveClose = document.getElementById('modal-reserve-close');
+    const navReserveBtn = document.getElementById('nav-reserve-btn');
+    const mobileReserveBtn = document.getElementById('mobile-reserve-btn');
+    const footerReserveLink = document.getElementById('footer-reserve-link');
+
+    function openReserveModal(locationName = '') {
+      if (locationName) {
+        document.getElementById('res-location').value = locationName;
+      }
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('res-date').min = today;
+      document.getElementById('res-date').value = today;
+
+      reserveModal.classList.add('active');
+    }
+
+    function closeReserveModal() {
+      reserveModal.classList.remove('active');
+    }
+
+    navReserveBtn.addEventListener('click', () => openReserveModal());
+    mobileReserveBtn.addEventListener('click', () => {
+      closeMobileDrawer();
+      openReserveModal();
+    });
+    footerReserveLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      openReserveModal();
+    });
+    modalReserveClose.addEventListener('click', closeReserveModal);
+    reserveModal.addEventListener('click', (e) => {
+      if (e.target === reserveModal) closeReserveModal();
+    });
+
+    document.querySelectorAll('.btn-book-table').forEach(btn => {
+      btn.addEventListener('click', () => openReserveModal(btn.dataset.location));
+    });
+
+    document.getElementById('reservation-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      closeReserveModal();
+      showToast('Table Reserved! Confirmation sent to your inbox.');
+      confetti({ particleCount: 80, spread: 60, origin: { y: 0.5 } });
+    });
+
+    /* NEWSLETTER CONFETTI EXPLOSION */
+    document.getElementById('newsletter-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('nl-email-input').value;
+      if (email) {
+        showToast('Welcome to Private Drops! Promo code SLOWROAST15 unlocked.');
+        document.getElementById('nl-email-input').value = '';
+        confetti({
+          particleCount: 120,
+          spread: 90,
+          origin: { y: 0.7 },
+          colors: ['#E5A04E', '#D85D38', '#FAF6EE']
+        });
+      }
+    });
+
+    /* MOBILE DRAWER CONTROLS */
+    const mobileDrawer = document.getElementById('mobile-drawer');
+    const mobileDrawerOverlay = document.getElementById('mobile-drawer-overlay');
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileDrawerClose = document.getElementById('mobile-drawer-close');
+
+    function openMobileDrawer() {
+      mobileDrawer.classList.add('active');
+      mobileDrawerOverlay.classList.add('active');
+    }
+
+    function closeMobileDrawer() {
+      mobileDrawer.classList.remove('active');
+      mobileDrawerOverlay.classList.remove('active');
+    }
+
+    mobileMenuBtn.addEventListener('click', openMobileDrawer);
+    mobileDrawerClose.addEventListener('click', closeMobileDrawer);
+    mobileDrawerOverlay.addEventListener('click', closeMobileDrawer);
+    document.querySelectorAll('.drawer-link').forEach(link => {
+      link.addEventListener('click', closeMobileDrawer);
+    });
+
+    /* BACK TO TOP SMOOTH SCROLL */
+    document.getElementById('btn-back-to-top').addEventListener('click', () => {
+      lenis.scrollTo(0, { duration: 1.4 });
+    });
+
+    /* TOAST NOTIFICATION HELPER */
+    let toastTimeout = null;
+    function showToast(message) {
+      const toast = document.getElementById('toast-notice');
+      const text = document.getElementById('toast-text');
+      text.textContent = message;
+      toast.classList.add('show');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
